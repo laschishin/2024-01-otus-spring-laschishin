@@ -2,7 +2,6 @@ package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
 import ru.otus.hw.dao.CsvQuestionDao;
-import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 
 import java.util.List;
@@ -11,7 +10,10 @@ import java.util.List;
 public class TestServiceImpl implements TestService {
 
     private final IOService ioService;
+
     private final CsvQuestionDao csvQuestionDao;
+
+    private final PrintQuestionService printQuestionService;
 
     @Override
     public void executeTest() {
@@ -21,20 +23,9 @@ public class TestServiceImpl implements TestService {
         List<Question> questions = csvQuestionDao.findAll();
 
         for (Question question : questions) {
-            printQuestion(question);
+            printQuestionService.print(question);
         }
 
     }
 
-    private void printQuestion(Question question) {
-
-        ioService.printLine(question.text());
-
-        for (Answer answer : question.answers()) {
-            ioService.printLine("* " + answer.text());
-        }
-
-        ioService.printFormattedLine("%n");
-
-    }
 }

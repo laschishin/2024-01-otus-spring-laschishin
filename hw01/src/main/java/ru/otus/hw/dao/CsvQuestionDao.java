@@ -28,6 +28,7 @@ public class CsvQuestionDao implements QuestionDao {
 
         List<QuestionDto> questionDtoList;
         try (Reader r = new InputStreamReader(is)) {
+
             questionDtoList = new CsvToBeanBuilder(r)
                     .withType(QuestionDto.class)
                     .withSeparator(';')
@@ -37,6 +38,8 @@ public class CsvQuestionDao implements QuestionDao {
 
         } catch (IOException e) {
             throw new QuestionReadException("File reading error: " + testFileName, e);
+        } catch (RuntimeException e) {
+            throw new QuestionReadException("File parsing error: " + testFileName, e);
         }
 
         return questionDtoList.stream().map(QuestionDto::toDomainObject).collect(Collectors.toList());
@@ -46,7 +49,7 @@ public class CsvQuestionDao implements QuestionDao {
     private InputStream getFileAsStream(String fileName) {
 
         ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(fileName); // TODO развернуть и посмотреть что будет с несуществующим файлом
+        InputStream inputStream = classLoader.getResourceAsStream(fileName);
 
         if (inputStream == null) {
             throw new IllegalArgumentException("File not found: " + fileName);
