@@ -5,7 +5,7 @@ import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 
 @RequiredArgsConstructor
-public class PrintQuestionServiceImpl implements PrintQuestionService {
+public class QuestionServiceImpl implements QuestionService {
 
     private final IOService ioService;
 

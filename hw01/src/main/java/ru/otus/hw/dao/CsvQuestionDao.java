@@ -6,6 +6,7 @@ import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
+import ru.otus.hw.service.UtilsService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,12 +20,14 @@ public class CsvQuestionDao implements QuestionDao {
 
     private final TestFileNameProvider fileNameProvider;
 
+    private final UtilsService utilsService;
+
     @Override
     public List<Question> findAll() {
 
         String testFileName = fileNameProvider.getTestFileName();
 
-        InputStream is = getFileAsStream(testFileName);
+        InputStream is = utilsService.getFileAsStream(testFileName);
 
         List<QuestionDto> questionDtoList;
         try (Reader r = new InputStreamReader(is)) {
@@ -46,16 +49,4 @@ public class CsvQuestionDao implements QuestionDao {
 
     }
 
-    private InputStream getFileAsStream(String fileName) {
-
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(fileName);
-
-        if (inputStream == null) {
-            throw new IllegalArgumentException("File not found: " + fileName);
-        }
-
-        return inputStream;
-
-    }
 }

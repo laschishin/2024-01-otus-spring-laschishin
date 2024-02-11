@@ -13,7 +13,7 @@ public class TestServiceImpl implements TestService {
 
     private final CsvQuestionDao csvQuestionDao;
 
-    private final PrintQuestionService printQuestionService;
+    private final QuestionService questionService;
 
     @Override
     public void executeTest() {
@@ -23,7 +23,7 @@ public class TestServiceImpl implements TestService {
         List<Question> questions = csvQuestionDao.findAll();
 
         for (Question question : questions) {
-            printQuestionService.print(question);
+            questionService.print(question);
         }
 
     }
