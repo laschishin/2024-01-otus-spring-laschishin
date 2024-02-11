@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.domain.Answer;
@@ -14,6 +13,8 @@ import ru.otus.hw.service.UtilsService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CsvQuestionDaoTest {
@@ -42,10 +43,10 @@ class CsvQuestionDaoTest {
                         ))
         );
 
-        Mockito.when(testFileNameProvider.getTestFileName())
+        when(testFileNameProvider.getTestFileName())
                 .thenReturn(testFileName);
 
-        Mockito.when(utilsService.getFileAsStream(testFileName))
+        when(utilsService.getFileAsStream(testFileName))
                 .thenReturn(questionsInputStream);
 
         CsvQuestionDao csvQuestionDao = new CsvQuestionDao(testFileNameProvider, utilsService);
@@ -54,11 +55,11 @@ class CsvQuestionDaoTest {
 
         Assertions.assertEquals(expectedQuestions, actualQuestions);
 
-        Mockito.verify(testFileNameProvider, Mockito.times(1)).getTestFileName();
+        verify(testFileNameProvider, times(1)).getTestFileName();
 
-        Mockito.verify(utilsService, Mockito.times(1)).getFileAsStream(testFileName);
+        verify(utilsService, times(1)).getFileAsStream(testFileName);
 
-        Mockito.verifyNoMoreInteractions(testFileNameProvider, utilsService);
+        verifyNoMoreInteractions(testFileNameProvider, utilsService);
 
     }
 
