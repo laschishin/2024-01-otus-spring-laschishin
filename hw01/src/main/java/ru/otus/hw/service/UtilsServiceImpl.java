@@ -1,5 +1,7 @@
 package ru.otus.hw.service;
 
+import ru.otus.hw.exceptions.QuestionReadException;
+
 import java.io.InputStream;
 
 public class UtilsServiceImpl implements UtilsService {
@@ -11,7 +13,7 @@ public class UtilsServiceImpl implements UtilsService {
         InputStream inputStream = classLoader.getResourceAsStream(fileName);
 
         if (inputStream == null) {
-            throw new IllegalArgumentException("File not found: " + fileName);
+            throw new QuestionReadException("File not found: " + fileName);
         }
 
         return inputStream;

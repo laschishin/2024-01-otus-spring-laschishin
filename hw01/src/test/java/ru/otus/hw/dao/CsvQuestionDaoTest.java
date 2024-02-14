@@ -14,7 +14,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class CsvQuestionDaoTest {
@@ -55,9 +57,9 @@ class CsvQuestionDaoTest {
 
         Assertions.assertEquals(expectedQuestions, actualQuestions);
 
-        verify(testFileNameProvider, times(1)).getTestFileName();
+        verify(testFileNameProvider).getTestFileName();
 
-        verify(utilsService, times(1)).getFileAsStream(testFileName);
+        verify(utilsService).getFileAsStream(testFileName);
 
         verifyNoMoreInteractions(testFileNameProvider, utilsService);
 

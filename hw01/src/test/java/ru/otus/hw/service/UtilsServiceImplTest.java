@@ -1,9 +1,8 @@
 package ru.otus.hw.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UtilsServiceImplTest {
 
@@ -15,7 +14,7 @@ class UtilsServiceImplTest {
         String nonExistingFileName = "///<>blabla.csv";
         utilsService = new UtilsServiceImpl();
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> utilsService.getFileAsStream(nonExistingFileName));
+        assertThrows(IllegalArgumentException.class, () -> utilsService.getFileAsStream(nonExistingFileName));
 
     }
 
