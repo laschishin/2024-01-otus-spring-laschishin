@@ -1,9 +1,11 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 
+@Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
 
