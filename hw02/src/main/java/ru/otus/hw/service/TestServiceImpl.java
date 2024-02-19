@@ -23,7 +23,7 @@ public class TestServiceImpl implements TestService {
     @Override
     public TestResult executeTestFor(Student student) {
 
-        ioService.printFormattedLine("Please answer the questions below%n");
+        ioService.printFormattedLine("Please answer the questions below");
 
         List<Question> questions = questionDao.findAll();
 
@@ -31,23 +31,16 @@ public class TestServiceImpl implements TestService {
 
         for (Question question : questions) {
             questionService.print(question);
+
+            int maxAnswerNumber = questionService.getAnswersCount(question) + 1;
+            int userAnswerNumber = ioService.readIntForRangeWithPrompt(1, maxAnswerNumber, "Your answer is: ",
+                    String.format("Please input a number between 1 and %s", maxAnswerNumber));
+
+            boolean isAnswerCorrect = questionService.isAnswerCorrect(question, userAnswerNumber);
+
+            testResult.applyAnswer(question, isAnswerCorrect);
         }
 
         return testResult;
     }
-
-
-//    @Override
-//    public TestResult executeTestFor(Student student) {
-//        ioService.printLine("");
-//        ioService.printFormattedLine("Please answer the questions below%n");
-//        var questions = questionDao.findAll();
-//        var testResult = new TestResult(student);
-//
-//        for (var question: questions) {
-//            var isAnswerValid = false; // Задать вопрос, получить ответ
-//            testResult.applyAnswer(question, isAnswerValid);
-//        }
-//        return testResult;
-//    }
 }

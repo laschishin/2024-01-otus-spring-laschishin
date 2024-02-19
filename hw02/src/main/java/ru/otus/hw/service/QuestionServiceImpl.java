@@ -14,13 +14,24 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void print(Question question) {
 
-        ioService.printLine(question.text());
+        ioService.printFormattedLine("%n%s", question.text());
 
+        int answerNumber = 1;
         for (Answer answer : question.answers()) {
-            ioService.printLine("* " + answer.text());
+            ioService.printFormattedLine("%s. %s ", answerNumber, answer.text());
+            answerNumber++;
         }
 
-        ioService.printFormattedLine("%n");
+    }
 
+    @Override
+    public boolean isAnswerCorrect(Question question, int answerNumber) {
+        int answerIndex = answerNumber - 1;
+        return question.answers().get(answerIndex).isCorrect();
+    }
+
+    @Override
+    public int getAnswersCount(Question question) {
+        return question.answers().size();
     }
 }
