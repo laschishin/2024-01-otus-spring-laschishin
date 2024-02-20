@@ -2,7 +2,6 @@ package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.dao.CsvQuestionDao;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.domain.Student;
@@ -32,7 +31,7 @@ public class TestServiceImpl implements TestService {
         for (Question question : questions) {
             questionService.print(question);
 
-            int maxAnswerNumber = questionService.getAnswersCount(question) + 1;
+            int maxAnswerNumber = questionService.getAnswersCount(question);
             int userAnswerNumber = ioService.readIntForRangeWithPrompt(1, maxAnswerNumber, "Your answer is: ",
                     String.format("Please input a number between 1 and %s", maxAnswerNumber));
 
