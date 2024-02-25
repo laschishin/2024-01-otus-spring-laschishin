@@ -2,6 +2,7 @@ package ru.otus.hw.dao;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.hw.config.TestFileNameProvider;
@@ -21,6 +22,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @ExtendWith(MockitoExtension.class)
 class CsvQuestionDaoTest {
 
+    @InjectMocks
+    private CsvQuestionDao csvQuestionDao;
+
     @Mock
     private TestFileNameProvider testFileNameProvider;
 
@@ -29,13 +33,6 @@ class CsvQuestionDaoTest {
 
     @Test
     void findAllFullTest() {
-
-        String testFileName = "questions.csv";
-        String mockedCSVContent = """
-                First line should be skipped
-                Is there life on Mars?;Science doesn't know this yet%true|Certainly. The red UFO is from Mars. And green is from Venus%false|Absolutely not%false
-                """;
-        InputStream questionsInputStream = new ByteArrayInputStream(mockedCSVContent.getBytes());
 
         List<Question> expectedQuestions = List.of(
                 new Question("Is there life on Mars?",
@@ -46,13 +43,15 @@ class CsvQuestionDaoTest {
                         ))
         );
 
+        String testFileName = "questions.csv";
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        InputStream testInputStream = classLoader.getResourceAsStream(testFileName);
+
         when(testFileNameProvider.getTestFileName())
                 .thenReturn(testFileName);
 
         when(utilsService.getFileAsStream(testFileName))
-                .thenReturn(questionsInputStream);
-
-        CsvQuestionDao csvQuestionDao = new CsvQuestionDao(testFileNameProvider, utilsService);
+                .thenReturn(testInputStream);
 
         List<Question> actualQuestions = csvQuestionDao.findAll();
 

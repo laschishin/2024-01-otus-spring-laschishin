@@ -2,6 +2,7 @@ package ru.otus.hw.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.hw.dao.QuestionDao;
@@ -19,6 +20,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class TestServiceImplTest {
+
+    @InjectMocks
+    TestServiceImpl testService;
 
     @Mock
     IOService ioService;
@@ -55,8 +59,6 @@ class TestServiceImplTest {
                 String.format("Please input a number between 1 and %s", expectedMaxAnswerNumber)))
                 .thenReturn(expectedUserAnswerNumber);
         when(questionService.isAnswerCorrect(expectedQuestion, expectedUserAnswerNumber)).thenReturn(true);
-
-        TestService testService = new TestServiceImpl(ioService, questionDao, questionService);
 
         TestResult actualTestResult = testService.executeTestFor(student);
 
