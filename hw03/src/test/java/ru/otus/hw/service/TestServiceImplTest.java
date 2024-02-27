@@ -1,10 +1,10 @@
 package ru.otus.hw.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import ru.otus.hw.Application;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -14,23 +14,30 @@ import ru.otus.hw.domain.TestResult;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = {Application.class})
+@MockBean(classes = {
+        TestRunnerServiceImpl.class,
+        StudentService.class,
+        ResultService.class
+})
 class TestServiceImplTest {
 
-    @InjectMocks
+    @Autowired
     TestServiceImpl testService;
 
-    @Mock
+    @MockBean
     LocalizedIOService ioService;
 
-    @Mock
+    @MockBean
     QuestionDao questionDao;
 
-    @Mock
+    @MockBean
     QuestionService questionService;
 
     @Test
@@ -51,12 +58,13 @@ class TestServiceImplTest {
         TestResult expectedTestResult = new TestResult(student);
         expectedTestResult.applyAnswer(expectedQuestion, true);
 
-        doNothing().when(ioService).printFormattedLine("Please answer the questions below");
+        doNothing().when(ioService).printLine("");
+        doNothing().when(ioService).printLineLocalized("TestService.answer.the.questions");
         when(questionDao.findAll()).thenReturn(expectedQuestionsList);
         doNothing().when(questionService).print(expectedQuestion);
         when(questionService.getAnswersCount(expectedQuestion)).thenReturn(expectedMaxAnswerNumber);
-        when(ioService.readIntForRangeWithPrompt(1, expectedMaxAnswerNumber, "Your answer is: ",
-                String.format("Please input a number between 1 and %s", expectedMaxAnswerNumber)))
+        when(ioService.readIntForRangeWithPromptLocalized(1, expectedMaxAnswerNumber,
+                "TestService.your.answer.is", "TestService.please.input.number"))
                 .thenReturn(expectedUserAnswerNumber);
         when(questionService.isAnswerCorrect(expectedQuestion, expectedUserAnswerNumber)).thenReturn(true);
 
@@ -64,6 +72,14 @@ class TestServiceImplTest {
 
         assertEquals(expectedTestResult, actualTestResult);
 
+        verify(ioService, times(2)).printLine("");
+        verify(ioService, times(1)).printLineLocalized("TestService.answer.the.questions");
+        verify(questionDao).findAll();
+        verify(questionService).print(expectedQuestion);
+        verify(questionService).getAnswersCount(expectedQuestion);
+        verify(ioService).readIntForRangeWithPromptLocalized(1, expectedMaxAnswerNumber,
+                "TestService.your.answer.is", "TestService.please.input.number");
+        verify(questionService).isAnswerCorrect(expectedQuestion, expectedUserAnswerNumber);
         verifyNoMoreInteractions(ioService, questionDao, questionService);
 
     }

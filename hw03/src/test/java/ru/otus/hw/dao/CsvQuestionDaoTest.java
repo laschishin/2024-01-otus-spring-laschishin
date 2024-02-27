@@ -1,31 +1,37 @@
 package ru.otus.hw.dao;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import ru.otus.hw.Application;
 import ru.otus.hw.config.AppProperties;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
+import ru.otus.hw.service.TestRunnerServiceImpl;
 import ru.otus.hw.service.UtilsService;
 
 import java.io.InputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = {Application.class})
+@MockBean(classes = {
+        TestRunnerServiceImpl.class,
+})
 class CsvQuestionDaoTest {
 
-    @InjectMocks
+    @Autowired
     private CsvQuestionDao csvQuestionDao;
 
-    @Mock
+    @MockBean
     private AppProperties props;
 
-    @Mock
+    @MockBean
     private UtilsService utilsService;
 
     @Test
@@ -40,24 +46,19 @@ class CsvQuestionDaoTest {
                         ))
         );
 
-        String testFileName = "questions.csv";
+        String testFileName = "unit_test_questions.csv";
         ClassLoader classLoader = this.getClass().getClassLoader();
         InputStream testInputStream = classLoader.getResourceAsStream(testFileName);
 
-        when(props.getTestFileName())
-                .thenReturn(testFileName);
-
-        when(utilsService.getFileAsStream(testFileName))
-                .thenReturn(testInputStream);
+        when(props.getTestFileName()).thenReturn(testFileName);
+        when(utilsService.getFileAsStream(testFileName)).thenReturn(testInputStream);
 
         List<Question> actualQuestions = csvQuestionDao.findAll();
 
         assertEquals(expectedQuestions, actualQuestions);
 
         verify(props).getTestFileName();
-
         verify(utilsService).getFileAsStream(testFileName);
-
         verifyNoMoreInteractions(props, utilsService);
 
     }

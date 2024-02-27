@@ -1,33 +1,30 @@
 package ru.otus.hw.service;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
+import ru.otus.hw.Application;
+import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@ExtendWith(MockitoExtension.class)
-class QuestionServiceImplTest {
+@SpringBootTest(classes = {Application.class})
+@MockBean(classes = {
+        QuestionDao.class,
+        StreamsIOService.class
+})
+public class QuestionServiceImplTest {
 
-    @InjectMocks
-    private QuestionServiceImpl questionService;
-
-    @Mock
-    private StreamsIOService ioService;
+    @Autowired
+    private QuestionService questionService;
 
     @Test
     void isAnswerCorrect_when_TwoAnswersAndAnswerNumberIsTwo() {

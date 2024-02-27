@@ -16,8 +16,8 @@ import java.io.Reader;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
 
     private final AppProperties props;

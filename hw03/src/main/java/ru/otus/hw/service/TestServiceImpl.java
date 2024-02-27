@@ -32,7 +32,7 @@ public class TestServiceImpl implements TestService {
 
             int maxAnswerNumber = questionService.getAnswersCount(question);
             int userAnswerNumber = ioService.readIntForRangeWithPromptLocalized(1, maxAnswerNumber,
-                    "TestService.your.answer.is", "TestService.input.number.between");
+                    "TestService.your.answer.is", "TestService.please.input.number");
 
             boolean isAnswerCorrect = questionService.isAnswerCorrect(question, userAnswerNumber);
 

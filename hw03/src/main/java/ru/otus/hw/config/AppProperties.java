@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Locale;
 import java.util.Map;
 
-@Setter
 @ConfigurationProperties(prefix = "test")
+@Setter
 public class AppProperties implements TestConfig, TestFileNameProvider, LocaleConfig {
 
     @Getter
