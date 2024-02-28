@@ -16,9 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = {Application.class})
+@SpringBootTest(classes = {QuestionServiceImpl.class})
 @MockBean(classes = {
-        QuestionDao.class,
         StreamsIOService.class
 })
 public class QuestionServiceImplTest {

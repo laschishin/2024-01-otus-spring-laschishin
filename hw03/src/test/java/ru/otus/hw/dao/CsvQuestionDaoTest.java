@@ -19,10 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {Application.class})
-@MockBean(classes = {
-        TestRunnerServiceImpl.class,
-})
+@SpringBootTest(classes = {CsvQuestionDao.class})
 class CsvQuestionDaoTest {
 
     @Autowired

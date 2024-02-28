@@ -20,12 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {Application.class})
-@MockBean(classes = {
-        TestRunnerServiceImpl.class,
-        StudentService.class,
-        ResultService.class
-})
+@SpringBootTest(classes = {TestServiceImpl.class})
 class TestServiceImplTest {
 
     @Autowired
