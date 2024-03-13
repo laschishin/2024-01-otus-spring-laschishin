@@ -17,6 +17,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
+
     private final AuthorRepository authorRepository;
 
     private final GenreRepository genreRepository;
@@ -34,13 +35,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book insert(String title, long authorId, Set<Long> genresIds) {
-        return save(0, title, authorId, genresIds);
+    public Book insert(String title, Set<Long> authorsIds, long genresId) {
+        return save(0, title, authorsIds, genresId);
     }
 
     @Override
-    public Book update(long id, String title, long authorId, Set<Long> genresIds) {
-        return save(id, title, authorId, genresIds);
+    public Book update(long id, String title, Set<Long> authorsIds, long genresId) {
+        return save(id, title, authorsIds, genresId);
     }
 
     @Override
@@ -48,19 +49,19 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    private Book save(long id, String title, long authorId, Set<Long> genresIds) {
-        if (isEmpty(genresIds)) {
-            throw new IllegalArgumentException("Genres ids must not be null");
+    private Book save(long id, String title, Set<Long> authorsIds, long genreId) {
+        if (isEmpty(authorsIds)) {
+            throw new IllegalArgumentException("Authors ids must not be null");
         }
 
-        var author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        var genres = genreRepository.findAllByIds(genresIds);
-        if (isEmpty(genres) || genresIds.size() != genres.size()) {
-            throw new EntityNotFoundException("One or all genres with ids %s not found".formatted(genresIds));
+        var genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+        var authors = authorRepository.findAllByIds(authorsIds);
+        if (isEmpty(authorsIds) || authorsIds.size() != authors.size()) {
+            throw new EntityNotFoundException("One or all authors with ids %s not found".formatted(authorsIds));
         }
 
-        var book = new Book(id, title, author, genres);
+        var book = new Book(id, title, authors, genre);
         return bookRepository.save(book);
     }
 }

@@ -34,15 +34,15 @@ public class BookCommands {
 
     // bins newBook 1 1,6
     @ShellMethod(value = "Insert book", key = "bins")
-    public String insertBook(String title, long authorId, Set<Long> genresIds) {
-        var savedBook = bookService.insert(title, authorId, genresIds);
+    public String insertBook(String title, Set<Long> authorsIds, long genreId) {
+        var savedBook = bookService.insert(title, authorsIds, genreId);
         return bookConverter.bookToString(savedBook);
     }
 
     // bupd 4 editedBook 3 2,5
     @ShellMethod(value = "Update book", key = "bupd")
-    public String updateBook(long id, String title, long authorId, Set<Long> genresIds) {
-        var savedBook = bookService.update(id, title, authorId, genresIds);
+    public String updateBook(long id, String title, Set<Long> authorsIds, long genreId) {
+        var savedBook = bookService.update(id, title, authorsIds, genreId);
         return bookConverter.bookToString(savedBook);
     }
 

@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JdbcBookRepository implements BookRepository {
 
-    private final GenreRepository genreRepository;
+    private final AuthorRepository authorRepository;
 
     @Override
     public Optional<Book> findById(long id) {
@@ -28,10 +28,10 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public List<Book> findAll() {
-        var genres = genreRepository.findAll();
+        var authors = authorRepository.findAll();
         var relations = getAllGenreRelations();
-        var books = getAllBooksWithoutGenres();
-        mergeBooksInfo(books, genres, relations);
+        var books = getAllBooksWithoutAuthors();
+        mergeBooksInfo(books, authors, relations);
         return books;
     }
 
@@ -48,7 +48,7 @@ public class JdbcBookRepository implements BookRepository {
         //...
     }
 
-    private List<Book> getAllBooksWithoutGenres() {
+    private List<Book> getAllBooksWithoutAuthors() {
         return new ArrayList<>();
     }
 
@@ -56,7 +56,8 @@ public class JdbcBookRepository implements BookRepository {
         return new ArrayList<>();
     }
 
-    private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
+    private void mergeBooksInfo(List<Book> booksWithoutGenres,
+                                List<Author> authors,
                                 List<BookGenreRelation> relations) {
         // Добавить книгам (booksWithoutGenres) жанры (genres) в соответствии со связями (relations)
     }
