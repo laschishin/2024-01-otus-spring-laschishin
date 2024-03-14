@@ -1,10 +1,9 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.jdbc.core.JdbcOperations;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
@@ -12,16 +11,11 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcGenreRepository implements GenreRepository {
 
-    private final JdbcOperations jdbc;
+    private final NamedParameterJdbcOperations jdbc;
 
-    private final NamedParameterJdbcOperations namedParameterJdbcOperations;
-
-    public JdbcGenreRepository(NamedParameterJdbcOperations namedParameterJdbcOperations) {
-        this.jdbc = namedParameterJdbcOperations.getJdbcOperations();
-        this.namedParameterJdbcOperations = namedParameterJdbcOperations;
-    }
 
     @Override
     public List<Genre> findAll() {
@@ -31,7 +25,7 @@ public class JdbcGenreRepository implements GenreRepository {
     @Override
     public Optional<Genre> findById(long id) {
         Map<String, Object> queryParams = Collections.singletonMap("id", id);
-        var genre = namedParameterJdbcOperations.queryForObject(
+        var genre = jdbc.queryForObject(
                 "select id, name from genres where id = :id", queryParams, new GenreRowMapper()
         );
 
