@@ -29,7 +29,7 @@ public class JdbcAuthorRepository implements AuthorRepository {
                 .collect(Collectors.toMap(k -> "id", v -> v));
 
         return jdbc.query(
-                "select id, name from genres where id = :id", queryParams, new AuthorRowMapper()
+                "select id, full_name from authors where id = :id", queryParams, new AuthorRowMapper()
         );
     }
 
