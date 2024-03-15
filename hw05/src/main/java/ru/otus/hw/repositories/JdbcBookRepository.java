@@ -12,6 +12,7 @@ import ru.otus.hw.models.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -90,8 +91,25 @@ public class JdbcBookRepository implements BookRepository {
                                 List<Author> authors,
                                 List<BookAuthorRelation> relations) {
         // Добавить книгам (booksWithoutAuthors) жанры (genres) в соответствии со связями (relations)
-        booksWithoutAuthors.stream()
-                .filter(b -> relations.stream().filter(r -> r.bookId == b.getId()));
+        booksWithoutAuthors = booksWithoutAuthors.stream()
+                .map(book -> enrichBookWithAuthors(book, authors, relations))
+                .collect(Collectors.toList());
+    }
+
+    private Author filterAuthorById(Long authorId, List<Author> authors) {
+        return authors.stream()
+                .filter(author -> authorId == author.getId())
+                .findFirst().get();
+    }
+
+    private Book enrichBookWithAuthors(Book book, List<Author> authors, List<BookAuthorRelation> relations) {
+        List<Author> bookAuthors =  relations.stream()
+                .filter(relation -> book.getId() == relation.bookId)
+                .map(relation -> filterAuthorById(relation.authorId, authors))
+                .toList();
+        book.setAuthors(bookAuthors);
+        return book;
+
     }
 
     private Book insert(Book book) {
@@ -162,6 +180,6 @@ public class JdbcBookRepository implements BookRepository {
             );
         }
     }
-    private record BookAuthorRelation(long bookId, long genreId) {
+    private record BookAuthorRelation(long bookId, long authorId) {
     }
 }
