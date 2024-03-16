@@ -2,7 +2,9 @@ package ru.otus.hw.repositories;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Author;
@@ -35,7 +37,7 @@ public class JdbcBookRepository implements BookRepository {
                   join authors a on a.id = ba.author_id
                  where ba.book_id = :book_id
                 """;
-        List<Author> bookAuthors = jdbc.query(bookAuthorsSQL, queryParams, new AuthorRowMapper()) ;
+        List<Author> bookAuthors = jdbc.query(bookAuthorsSQL, queryParams, new AuthorRowMapper());
 
         String bookSQL = """
                 select b.id       as book_id
@@ -76,7 +78,8 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public void deleteById(long id) {
-        //...
+        Map<String, Object> params = Collections.singletonMap("id", id);
+        jdbc.update("delete from books where id = :id", params);
     }
 
     private List<Book> getAllBooksWithoutAuthors() {
@@ -103,7 +106,7 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private Book enrichBookWithAuthors(Book book, List<Author> authors, List<BookAuthorRelation> relations) {
-        List<Author> bookAuthors =  relations.stream()
+        List<Author> bookAuthors = relations.stream()
                 .filter(relation -> book.getId() == relation.bookId)
                 .map(relation -> filterAuthorById(relation.authorId, authors))
                 .toList();
@@ -119,7 +122,7 @@ public class JdbcBookRepository implements BookRepository {
 
         //noinspection DataFlowIssue
         book.setId(keyHolder.getKeyAs(Long.class));
-        batchInsertGenresRelationsFor(book);
+        batchInsertAuthorsRelationsFor(book);
         return book;
     }
 
@@ -128,13 +131,33 @@ public class JdbcBookRepository implements BookRepository {
 
         // Выбросить EntityNotFoundException если не обновлено ни одной записи в БД
         removeGenresRelationsFor(book);
-        batchInsertGenresRelationsFor(book);
+        batchInsertAuthorsRelationsFor(book);
 
         return book;
     }
 
-    private void batchInsertGenresRelationsFor(Book book) {
-        // Использовать метод batchUpdate
+    private void batchInsertAuthorsRelationsFor(Book book) {
+
+        List<SqlParameterSource> params = new ArrayList<>();
+
+        for (Author author : book.getAuthors()) {
+            SqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("book_id", book.getId())
+                    .addValue("author_id", author.getId());
+//            Map<String, Object> param = new HashMap<String, Object>();
+//            param.put("book_id", book.getId());
+//            param.put("author_id", author.getId());
+
+            params.add(param);
+        }
+//
+//        Map<String, Object>[] arr = new Map<String, Object>[params.size()];
+//
+//        Integer arr2[] = new Integer[params.size()];
+//
+//        SqlParameterSource[] arr3 = new SqlParameterSource[params.size()];
+
+        jdbc.batchUpdate("insert into book_authors(book_id, author_id) values(?, ?)", params.toArray(new SqlParameterSource[params.size()]));
     }
 
     private void removeGenresRelationsFor(Book book) {
@@ -180,6 +203,7 @@ public class JdbcBookRepository implements BookRepository {
             );
         }
     }
+
     private record BookAuthorRelation(long bookId, long authorId) {
     }
 }
