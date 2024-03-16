@@ -83,7 +83,16 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private List<Book> getAllBooksWithoutAuthors() {
-        return jdbc.query("select id, title, genre_id from books", new BookWithoutAuthorsRowMapper());
+        String bookSQL = """
+                select b.id       as book_id
+                     , b.title    as book_title
+                     , b.genre_id as genre_id
+                     , g.name     as genre_name
+                  from books b
+                  left join genres g on g.id = b.genre_id
+                """;
+
+        return jdbc.query(bookSQL, new BookWithoutAuthorsRowMapper());
     }
 
     private List<BookAuthorRelation> getAllAuthorRelations() {
@@ -93,7 +102,6 @@ public class JdbcBookRepository implements BookRepository {
     private void mergeBooksInfo(List<Book> booksWithoutAuthors,
                                 List<Author> authors,
                                 List<BookAuthorRelation> relations) {
-        // Добавить книгам (booksWithoutAuthors) жанры (genres) в соответствии со связями (relations)
         booksWithoutAuthors = booksWithoutAuthors.stream()
                 .map(book -> enrichBookWithAuthors(book, authors, relations))
                 .collect(Collectors.toList());
@@ -144,24 +152,28 @@ public class JdbcBookRepository implements BookRepository {
             SqlParameterSource param = new MapSqlParameterSource()
                     .addValue("book_id", book.getId())
                     .addValue("author_id", author.getId());
-//            Map<String, Object> param = new HashMap<String, Object>();
-//            param.put("book_id", book.getId());
-//            param.put("author_id", author.getId());
 
             params.add(param);
         }
-//
-//        Map<String, Object>[] arr = new Map<String, Object>[params.size()];
-//
-//        Integer arr2[] = new Integer[params.size()];
-//
-//        SqlParameterSource[] arr3 = new SqlParameterSource[params.size()];
 
-        jdbc.batchUpdate("insert into book_authors(book_id, author_id) values(?, ?)", params.toArray(new SqlParameterSource[params.size()]));
+        jdbc.batchUpdate("insert into book_authors(book_id, author_id) values(?, ?)",
+                params.toArray(new SqlParameterSource[0]));
     }
 
     private void removeGenresRelationsFor(Book book) {
-        //...
+        List<SqlParameterSource> params = new ArrayList<>();
+
+        for (Author author : book.getAuthors()) {
+            SqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("book_id", book.getId())
+                    .addValue("author_id", author.getId());
+
+            params.add(param);
+        }
+
+        jdbc.batchUpdate("delete from book_authors where book_id = ? and author_id = ?",
+                params.toArray(new SqlParameterSource[0]));
+
     }
 
     private static class BookWithoutAuthorsRowMapper implements RowMapper<Book> {

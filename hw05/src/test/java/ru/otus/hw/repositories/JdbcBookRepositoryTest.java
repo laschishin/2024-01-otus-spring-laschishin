@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jdbc для работы с книгами ")
 @JdbcTest
-@Import({JdbcBookRepository.class, JdbcGenreRepository.class})
+@Import({JdbcBookRepository.class, JdbcAuthorRepository.class})
 class JdbcBookRepositoryTest {
 
     @Autowired
@@ -61,8 +61,12 @@ class JdbcBookRepositoryTest {
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-        var expectedBook = new Book(0, "BookTitle_10500", dbAuthors.get(0),
-                List.of(dbGenres.get(0), dbGenres.get(2)));
+        var expectedBook = new Book(
+                0,
+                "BookTitle_10500",
+                List.of(dbAuthors.get(0), dbAuthors.get(2)),
+                dbGenres.get(0)
+        );
         var returnedBook = repositoryJdbc.save(expectedBook);
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
@@ -77,8 +81,8 @@ class JdbcBookRepositoryTest {
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        var expectedBook = new Book(1L, "BookTitle_10500", dbAuthors.get(2),
-                List.of(dbGenres.get(4), dbGenres.get(5)));
+        var expectedBook = new Book(1L, "BookTitle_10500",
+                List.of(dbAuthors.get(4), dbAuthors.get(5)), dbGenres.get(2));
 
         assertThat(repositoryJdbc.findById(expectedBook.getId()))
                 .isPresent()
@@ -105,7 +109,7 @@ class JdbcBookRepositoryTest {
     }
 
     private static List<Author> getDbAuthors() {
-        return IntStream.range(1, 4).boxed()
+        return IntStream.range(1, 7).boxed()
                 .map(id -> new Author(id, "Author_" + id))
                 .toList();
     }
@@ -120,9 +124,9 @@ class JdbcBookRepositoryTest {
         return IntStream.range(1, 4).boxed()
                 .map(id -> new Book(id,
                         "BookTitle_" + id,
-                        dbAuthors.get(id - 1),
-                        dbGenres.subList((id - 1) * 2, (id - 1) * 2 + 2)
-                ))
+                        dbAuthors.subList((id - 1) * 2, (id - 1) * 2 + 2),
+                        dbGenres.get(id - 1)
+                        ))
                 .toList();
     }
 

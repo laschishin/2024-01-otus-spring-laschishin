@@ -9,7 +9,7 @@ values ('Genre_1'), ('Genre_2'), ('Genre_3'),
 insert into books(title, genre_id)
 values ('BookTitle_1', 1), ('BookTitle_2', 2), ('BookTitle_3', 3);
 
-insert into books_authors(book_id, author_id)
+insert into book_authors(book_id, author_id)
 values (1, 1),   (1, 2),
        (2, 3),   (2, 4),
        (3, 5),   (3, 6);

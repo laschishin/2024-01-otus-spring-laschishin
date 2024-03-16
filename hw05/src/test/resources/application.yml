@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
-  sql:
-    init:
-      mode: always
-      data-locations: 2024-03-13--0001-init-data.sql
-      schema-locations: 2024-03-13--0001-init-tables.sql
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: db.changelog/data/2024-03-13--0001-init-data.sql
+#      schema-locations: db/changelog/1.0/2024-03-13--0001-init-tables.sql

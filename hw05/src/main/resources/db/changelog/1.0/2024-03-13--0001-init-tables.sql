@@ -18,7 +18,7 @@ create table books (
     primary key (id)
 );
 
-create table books_authors (
+create table book_authors (
     book_id bigint references books(id) on delete cascade,
     author_id bigint references authors(id) on delete cascade,
     primary key (book_id, author_id)
