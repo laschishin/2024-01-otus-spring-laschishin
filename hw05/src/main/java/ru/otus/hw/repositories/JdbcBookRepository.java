@@ -1,6 +1,7 @@
 package ru.otus.hw.repositories;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -30,15 +31,6 @@ public class JdbcBookRepository implements BookRepository {
 
         Map<String, Object> queryParams = Collections.singletonMap("book_id", id);
 
-        String bookAuthorsSQL = """
-                select a.id
-                     , a.full_name
-                  from book_authors ba
-                  join authors a on a.id = ba.author_id
-                 where ba.book_id = :book_id
-                """;
-        List<Author> bookAuthors = jdbc.query(bookAuthorsSQL, queryParams, new AuthorRowMapper());
-
         String bookSQL = """
                 select b.id       as book_id
                      , b.title    as book_title
@@ -48,11 +40,22 @@ public class JdbcBookRepository implements BookRepository {
                   left join genres g on g.id = b.genre_id
                  where b.id = :book_id
                 """;
-        Book book = jdbc.queryForObject(bookSQL, queryParams, new BookWithoutAuthorsRowMapper());
-
-        if (book == null) {
+        Book book;
+        try {
+            book = jdbc.queryForObject(bookSQL, queryParams, new BookWithoutAuthorsRowMapper());
+        }
+        catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+
+        String bookAuthorsSQL = """
+                select a.id
+                     , a.full_name
+                  from book_authors ba
+                  join authors a on a.id = ba.author_id
+                 where ba.book_id = :book_id
+                """;
+        List<Author> bookAuthors = jdbc.query(bookAuthorsSQL, queryParams, new AuthorRowMapper());
 
         book.setAuthors(bookAuthors);
 
