@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -43,8 +44,7 @@ public class JdbcBookRepository implements BookRepository {
         Book book;
         try {
             book = jdbc.queryForObject(bookSQL, queryParams, new BookWithoutAuthorsRowMapper());
-        }
-        catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
 
@@ -129,19 +129,30 @@ public class JdbcBookRepository implements BookRepository {
     private Book insert(Book book) {
         var keyHolder = new GeneratedKeyHolder();
 
-        //...
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("title", book.getTitle())
+                .addValue("genre_id", book.getGenre().getId());
 
-        //noinspection DataFlowIssue
+        jdbc.update("insert into books(title, genre_id) values(:title, :genre_id)", params, keyHolder);
+
         book.setId(keyHolder.getKeyAs(Long.class));
         batchInsertAuthorsRelationsFor(book);
         return book;
     }
 
     private Book update(Book book) {
-        //...
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("title", book.getTitle())
+                .addValue("genre_id", book.getGenre().getId())
+                .addValue("id", book.getId());
 
-        // Выбросить EntityNotFoundException если не обновлено ни одной записи в БД
-        removeGenresRelationsFor(book);
+        int updatedRowsCount = jdbc.update("update books set title = :title, genre_id = :genre_id where id = :id", params);
+
+        if (updatedRowsCount == 0) {
+            throw new EntityNotFoundException("Book has not been found");
+        }
+
+        removeAuthorsRelationsFor(book);
         batchInsertAuthorsRelationsFor(book);
 
         return book;
@@ -159,24 +170,14 @@ public class JdbcBookRepository implements BookRepository {
             params.add(param);
         }
 
-        jdbc.batchUpdate("insert into book_authors(book_id, author_id) values(?, ?)",
+        jdbc.batchUpdate("insert into book_authors(book_id, author_id) values(:book_id, :author_id)",
                 params.toArray(new SqlParameterSource[0]));
     }
 
-    private void removeGenresRelationsFor(Book book) {
-        List<SqlParameterSource> params = new ArrayList<>();
+    private void removeAuthorsRelationsFor(Book book) {
+        Map<String, Object> params = Collections.singletonMap("book_id", book.getId());
 
-        for (Author author : book.getAuthors()) {
-            SqlParameterSource param = new MapSqlParameterSource()
-                    .addValue("book_id", book.getId())
-                    .addValue("author_id", author.getId());
-
-            params.add(param);
-        }
-
-        jdbc.batchUpdate("delete from book_authors where book_id = ? and author_id = ?",
-                params.toArray(new SqlParameterSource[0]));
-
+        jdbc.update("delete from book_authors where book_id = :book_id", params);
     }
 
     private static class BookWithoutAuthorsRowMapper implements RowMapper<Book> {
