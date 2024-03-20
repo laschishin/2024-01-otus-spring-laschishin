@@ -1,8 +1,12 @@
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
-  sql:
-    init:
-      mode: always
-#      schema-locations: db/changelog/1.0/2024-03-13--0001-init-tables.sql
-      data-locations: data.sql
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: data.sql
+  liquibase:
+    enabled: true
+  h2:
+    console:
+      enabled: true
