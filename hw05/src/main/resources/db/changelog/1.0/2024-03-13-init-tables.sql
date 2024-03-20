@@ -1,4 +1,7 @@
---changeset laschishin:2024-03-13--0001-init-tables
+-- liquibase formatted sql
+
+-- changeset laschishin:1 labels:main,test
+
 create table authors (
     id bigserial,
     full_name varchar(255),

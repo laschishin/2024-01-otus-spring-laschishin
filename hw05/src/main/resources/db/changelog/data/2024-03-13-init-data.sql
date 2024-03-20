@@ -1,15 +1,18 @@
---changeset laschishin:2024-03-13--0001-init-tables
+-- liquibase formatted sql
+
+-- changeset laschishin:1 labels:main
+
 insert into authors(full_name)
-values ('Author_1'), ('Author_2'), ('Author_3'), ('Author_4'), ('Author_5'), ('Author_6');;
+values ('Аркадий Стругацкий'), ('Борис Стругацкий'), ('Илья Ильф'), ('Евгений Петров');
 
 insert into genres(name)
-values ('Genre_1'), ('Genre_2'), ('Genre_3'),
-       ('Genre_4'), ('Genre_5'), ('Genre_6');
+values ('Научная фантастика'), ('Приключения');
 
 insert into books(title, genre_id)
-values ('BookTitle_1', 1), ('BookTitle_2', 2), ('BookTitle_3', 3);
+values ('Понедельник начинается в субботу', 1), ('Жук в муравейнике', 1), ('Двенадцать стульев', 2), ('Поиск предназначения', 1);
 
 insert into book_authors(book_id, author_id)
 values (1, 1),   (1, 2),
-       (2, 3),   (2, 4),
-       (3, 5),   (3, 6);
+       (2, 1),   (2, 2),
+       (3, 3),   (3, 4),
+       (4, 2);

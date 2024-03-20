@@ -9,3 +9,5 @@ spring:
         web-allow-others: true
   liquibase:
     enabled: true
+    change-log: db/changelog/db.changelog-master.yaml
+    labels: main

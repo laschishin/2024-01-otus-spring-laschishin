@@ -1,5 +1,7 @@
 package ru.otus.hw.repositories;
 
+import org.h2.tools.Server;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -30,6 +33,7 @@ class JdbcBookRepositoryTest {
     private List<Genre> dbGenres;
 
     private List<Book> dbBooks;
+
 
     @BeforeEach
     void setUp() {

@@ -1,4 +1,7 @@
---changeset laschishin:2024-03-13--0001-init-tables
+-- liquibase formatted sql
+
+-- changeset laschishin:1 labels:test
+
 insert into authors(full_name)
 values ('Author_1'), ('Author_2'), ('Author_3'),
        ('Author_4'), ('Author_5'), ('Author_6');;
