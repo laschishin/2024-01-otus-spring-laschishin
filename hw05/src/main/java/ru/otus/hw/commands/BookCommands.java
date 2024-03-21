@@ -10,13 +10,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"SpellCheckingInspection", "unused"})
-@RequiredArgsConstructor
 @ShellComponent
+@RequiredArgsConstructor
 public class BookCommands {
 
     private final BookService bookService;
 
     private final BookConverter bookConverter;
+
 
     @ShellMethod(value = "Find all books", key = "ab")
     public String findAllBooks() {
@@ -51,4 +52,5 @@ public class BookCommands {
     public void deleteBook(long id) {
         bookService.deleteById(id);
     }
+
 }

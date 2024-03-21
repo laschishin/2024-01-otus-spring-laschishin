@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface BookService {
+
     Optional<Book> findById(long id);
 
     List<Book> findAll();
@@ -16,4 +17,5 @@ public interface BookService {
     Book update(long id, String title, Set<Long> authorsIds, long genresId);
 
     void deleteById(long id);
+
 }

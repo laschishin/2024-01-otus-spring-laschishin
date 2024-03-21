@@ -8,13 +8,14 @@ import ru.otus.hw.services.AuthorService;
 
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @ShellComponent
+@RequiredArgsConstructor
 public class AuthorCommands {
 
     private final AuthorService authorService;
 
     private final AuthorConverter authorConverter;
+
 
     @ShellMethod(value = "Find all authors", key = "aa")
     public String findAllAuthors() {
@@ -22,4 +23,5 @@ public class AuthorCommands {
                 .map(authorConverter::authorToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
+
 }

@@ -15,7 +15,11 @@ import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -195,8 +199,8 @@ public class JdbcBookRepository implements BookRepository {
                     null,
                     genre
             );
-
         }
+
     }
 
     private static class AuthorRowMapper implements RowMapper<Author> {
@@ -207,6 +211,7 @@ public class JdbcBookRepository implements BookRepository {
             String authorFullName = rs.getString("full_name");
             return new Author(authorId, authorFullName);
         }
+
     }
 
     private static class BookAuthorRelationRowMapper implements RowMapper<BookAuthorRelation> {
@@ -218,6 +223,7 @@ public class JdbcBookRepository implements BookRepository {
                     rs.getLong("author_id")
             );
         }
+
     }
 
     private record BookAuthorRelation(long bookId, long authorId) {

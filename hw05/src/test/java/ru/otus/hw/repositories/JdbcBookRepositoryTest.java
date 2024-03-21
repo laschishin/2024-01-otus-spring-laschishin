@@ -1,7 +1,5 @@
 package ru.otus.hw.repositories;
 
-import org.h2.tools.Server;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,6 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -29,9 +26,7 @@ class JdbcBookRepositoryTest {
     private JdbcBookRepository repositoryJdbc;
 
     private List<Author> dbAuthors;
-
     private List<Genre> dbGenres;
-
     private List<Book> dbBooks;
 
 
@@ -47,7 +42,8 @@ class JdbcBookRepositoryTest {
     @MethodSource("getDbBooks")
     void shouldReturnCorrectBookById(Book expectedBook) {
         var actualBook = repositoryJdbc.findById(expectedBook.getId());
-        assertThat(actualBook).isPresent()
+        assertThat(actualBook)
+                .isPresent()
                 .get()
                 .isEqualTo(expectedBook);
     }
@@ -96,7 +92,9 @@ class JdbcBookRepositoryTest {
         var returnedBook = repositoryJdbc.save(expectedBook);
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .isEqualTo(expectedBook);
 
         assertThat(repositoryJdbc.findById(returnedBook.getId()))
                 .isPresent()
@@ -130,7 +128,7 @@ class JdbcBookRepositoryTest {
                         "BookTitle_" + id,
                         dbAuthors.subList((id - 1) * 2, (id - 1) * 2 + 2),
                         dbGenres.get(id - 1)
-                        ))
+                ))
                 .toList();
     }
 
@@ -139,4 +137,5 @@ class JdbcBookRepositoryTest {
         var dbGenres = getDbGenres();
         return getDbBooks(dbAuthors, dbGenres);
     }
+
 }

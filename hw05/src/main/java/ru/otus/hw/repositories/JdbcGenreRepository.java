@@ -8,7 +8,10 @@ import ru.otus.hw.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,5 +43,7 @@ public class JdbcGenreRepository implements GenreRepository {
             String genreName = rs.getString("name");
             return new Genre(genreId, genreName);
         }
+
     }
+
 }

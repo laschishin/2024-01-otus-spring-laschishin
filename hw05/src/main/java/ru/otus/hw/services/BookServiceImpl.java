@@ -14,8 +14,8 @@ import java.util.Set;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final AuthorRepository authorRepository;
@@ -23,6 +23,7 @@ public class BookServiceImpl implements BookService {
     private final GenreRepository genreRepository;
 
     private final BookRepository bookRepository;
+
 
     @Override
     public Optional<Book> findById(long id) {
@@ -64,4 +65,5 @@ public class BookServiceImpl implements BookService {
         var book = new Book(id, title, authors, genre);
         return bookRepository.save(book);
     }
+
 }

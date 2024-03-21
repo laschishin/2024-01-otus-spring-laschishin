@@ -6,12 +6,14 @@ import ru.otus.hw.models.Book;
 
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class BookConverter {
+
     private final AuthorConverter authorConverter;
 
     private final GenreConverter genreConverter;
+
 
     public String bookToString(Book book) {
         var authorsString = book.getAuthors().stream()
@@ -24,4 +26,5 @@ public class BookConverter {
                 genreConverter.genreToString(book.getGenre()),
                 authorsString);
     }
+
 }

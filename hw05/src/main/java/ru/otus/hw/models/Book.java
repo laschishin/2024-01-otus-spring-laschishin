@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Book {
+
     private long id;
 
     private String title;
@@ -17,4 +18,5 @@ public class Book {
     private List<Author> authors;
 
     private Genre genre;
+
 }
