@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 class TestServiceImplTest {
 
     @Autowired
-    TestServiceImpl testService;
+    TestService testService;
 
     @MockBean
     LocalizedIOService ioService;

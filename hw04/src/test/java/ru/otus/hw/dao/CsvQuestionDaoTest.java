@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 class CsvQuestionDaoTest {
 
     @Autowired
-    private CsvQuestionDao csvQuestionDao;
+    private QuestionDao csvQuestionDao;
 
     @MockBean
     private AppProperties props;
