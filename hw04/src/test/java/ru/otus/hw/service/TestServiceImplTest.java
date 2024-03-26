@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {TestServiceImpl.class})
+@SpringBootTest
 class TestServiceImplTest {
 
     @Autowired
