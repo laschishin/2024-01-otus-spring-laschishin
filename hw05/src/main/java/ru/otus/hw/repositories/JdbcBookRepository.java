@@ -1,7 +1,8 @@
 package ru.otus.hw.repositories;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -37,33 +38,22 @@ public class JdbcBookRepository implements BookRepository {
         Map<String, Object> queryParams = Collections.singletonMap("book_id", id);
 
         String bookSQL = """
-                select b.id       as book_id
-                     , b.title    as book_title
-                     , b.genre_id as genre_id
-                     , g.name     as genre_name
+                select b.id        as book_id
+                     , b.title     as book_title
+                     , b.genre_id  as genre_id
+                     , g.name      as genre_name
+                     , a.id        as author_id
+                     , a.full_name as author_full_name
                   from books b
                   left join genres g on g.id = b.genre_id
+                  left join book_authors ba on ba.book_id = b.id
+                  left join authors a on a.id = ba.author_id
                  where b.id = :book_id
                 """;
-        Book book;
-        try {
-            book = jdbc.queryForObject(bookSQL, queryParams, new BookWithoutAuthorsRowMapper());
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
 
-        String bookAuthorsSQL = """
-                select a.id
-                     , a.full_name
-                  from book_authors ba
-                  join authors a on a.id = ba.author_id
-                 where ba.book_id = :book_id
-                """;
-        List<Author> bookAuthors = jdbc.query(bookAuthorsSQL, queryParams, new AuthorRowMapper());
+        Book book = jdbc.query(bookSQL, queryParams, new BookResultSetExtractor());
 
-        book.setAuthors(bookAuthors);
-
-        return Optional.of(book);
+        return Optional.ofNullable(book);
     }
 
     @Override
@@ -117,7 +107,8 @@ public class JdbcBookRepository implements BookRepository {
     private Author filterAuthorById(Long authorId, List<Author> authors) {
         return authors.stream()
                 .filter(author -> authorId == author.getId())
-                .findFirst().get();
+                .findFirst()
+                .get();
     }
 
     private Book enrichBookWithAuthors(Book book, List<Author> authors, List<BookAuthorRelation> relations) {
@@ -203,15 +194,38 @@ public class JdbcBookRepository implements BookRepository {
 
     }
 
-    private static class AuthorRowMapper implements RowMapper<Author> {
+    @RequiredArgsConstructor
+    private static class BookResultSetExtractor implements ResultSetExtractor<Book> {
 
         @Override
-        public Author mapRow(ResultSet rs, int i) throws SQLException {
-            long authorId = rs.getLong("id");
-            String authorFullName = rs.getString("full_name");
-            return new Author(authorId, authorFullName);
-        }
+        public Book extractData(ResultSet rs) throws SQLException, DataAccessException {
 
+            Book book = null;
+            List<Author> authors = null;
+
+            while (rs.next()) {
+
+                if(rs.getRow() == 1) {
+                    book = new Book();
+                    authors = new ArrayList<>();
+                    book.setId(rs.getLong("book_id"));
+                    book.setTitle(rs.getString("book_title"));
+                    book.setGenre(new Genre(
+                            rs.getLong("genre_id"),
+                            rs.getString("genre_name")
+                    ));
+                }
+                authors.add(new Author(
+                        rs.getLong("author_id"),
+                        rs.getString("author_full_name")
+                ));
+            }
+            if (book == null) {
+                return null;
+            }
+            book.setAuthors(authors);
+            return book;
+        }
     }
 
     private static class BookAuthorRelationRowMapper implements RowMapper<BookAuthorRelation> {
