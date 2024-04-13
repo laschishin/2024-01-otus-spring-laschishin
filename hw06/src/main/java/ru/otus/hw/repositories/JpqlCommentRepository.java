@@ -5,35 +5,37 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.models.Comment;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JpqlGenreRepository implements GenreRepository {
+public class JpqlCommentRepository implements CommentRepository {
 
     @PersistenceContext
     private final EntityManager em;
 
 
     @Override
-    public List<Genre> findAll() {
-        TypedQuery<Genre> query = em.createQuery("""
-                        select g
-                          from Genre g
+    public List<Comment> findAllByBookId(long bookId) {
+        TypedQuery<Comment> query = em.createQuery("""
+                        select c
+                          from Comment c
+                         where c.bookId = :bookId
                         """,
-                Genre.class
+                Comment.class
         );
+        query.setParameter("bookId", bookId);
         return query.getResultList();
 
     }
 
     @Override
-    public Optional<Genre> findById(long id) {
+    public Optional<Comment> findById(long id) {
 
-        return Optional.ofNullable(em.find(Genre.class, id));
+        return Optional.ofNullable(em.find(Comment.class, id));
 
     }
 

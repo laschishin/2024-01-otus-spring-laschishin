@@ -26,3 +26,4 @@ dependency-reduced-pom.xml
 
 # Logs
 .log
+*.log
