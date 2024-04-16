@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface CommentRepository {
 
-    List<Comment> findAllByBookId(long bookId);
-
     Optional<Comment> findById(long id);
+
+    List<Comment> findAllByBookId(long bookId);
 
 }

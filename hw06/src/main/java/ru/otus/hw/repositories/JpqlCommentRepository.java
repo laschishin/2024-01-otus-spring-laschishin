@@ -19,6 +19,12 @@ public class JpqlCommentRepository implements CommentRepository {
 
 
     @Override
+    public Optional<Comment> findById(long id) {
+
+        return Optional.ofNullable(em.find(Comment.class, id));
+    }
+
+    @Override
     public List<Comment> findAllByBookId(long bookId) {
         TypedQuery<Comment> query = em.createQuery("""
                         select c
@@ -29,13 +35,6 @@ public class JpqlCommentRepository implements CommentRepository {
         );
         query.setParameter("bookId", bookId);
         return query.getResultList();
-
-    }
-
-    @Override
-    public Optional<Comment> findById(long id) {
-
-        return Optional.ofNullable(em.find(Comment.class, id));
 
     }
 
