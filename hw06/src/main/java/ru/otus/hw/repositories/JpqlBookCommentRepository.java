@@ -5,33 +5,33 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.models.Comment;
+import ru.otus.hw.models.BookComment;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class JpqlCommentRepository implements CommentRepository {
+public class JpqlBookCommentRepository implements BookCommentRepository {
 
     @PersistenceContext
     private final EntityManager em;
 
 
     @Override
-    public Optional<Comment> findById(long id) {
+    public Optional<BookComment> findById(long id) {
 
-        return Optional.ofNullable(em.find(Comment.class, id));
+        return Optional.ofNullable(em.find(BookComment.class, id));
     }
 
     @Override
-    public List<Comment> findAllByBookId(long bookId) {
-        TypedQuery<Comment> query = em.createQuery("""
-                        select c
-                          from Comment c
-                         where c.bookId = :bookId
+    public List<BookComment> findAllByBookId(long bookId) {
+        TypedQuery<BookComment> query = em.createQuery("""
+                        select bc
+                          from BookComment bc
+                         where bc.bookId = :bookId
                         """,
-                Comment.class
+                BookComment.class
         );
         query.setParameter("bookId", bookId);
         return query.getResultList();

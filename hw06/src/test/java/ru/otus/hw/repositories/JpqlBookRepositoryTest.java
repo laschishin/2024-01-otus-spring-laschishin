@@ -1,58 +1,70 @@
 package ru.otus.hw.repositories;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jdbc для работы с книгами ")
-@JdbcTest
+@DataJpaTest
 @Import({JpqlBookRepository.class, JpqlAuthorRepository.class})
 class JpqlBookRepositoryTest {
 
     @Autowired
-    private JpqlBookRepository repositoryJdbc;
+    private JpqlBookRepository jpqlBookRepository;
+
+    @Autowired
+    private TestEntityManager em;
+
+    private static final long FIRST_BOOK_ID = 1;
+    private static final Set<Long> AUTHORS_LIST = Set.of(1L, 2L);
+
 
     private List<Author> dbAuthors;
     private List<Genre> dbGenres;
     private List<Book> dbBooks;
 
 
-    @BeforeEach
-    void setUp() {
-        dbAuthors = getDbAuthors();
-        dbGenres = getDbGenres();
-        dbBooks = getDbBooks(dbAuthors, dbGenres);
-    }
-
     @DisplayName("должен загружать книгу по id")
-    @ParameterizedTest
-    @MethodSource("getDbBooks")
-    void shouldReturnCorrectBookById(Book expectedBook) {
-        var actualBook = repositoryJdbc.findById(expectedBook.getId());
+    @Test
+    void shouldReturnCorrectBookById() {
+
+        Book expectedBook = em.find(Book.class, FIRST_BOOK_ID);
+        Optional<Book> actualBook = jpqlBookRepository.findById(expectedBook.getId());
+
         assertThat(actualBook)
                 .isPresent()
                 .get()
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
                 .isEqualTo(expectedBook);
     }
 
     @DisplayName("должен загружать список всех книг")
     @Test
     void shouldReturnCorrectBooksList() {
-        var actualBooks = repositoryJdbc.findAll();
-        var expectedBooks = dbBooks;
+
+        List<Book> expectedBooks = em.getEntityManager()
+                .createQuery("""
+                        select b
+                          from Book b
+                          join fetch b.genre
+                          left join fetch b.authors
+                        """)
+                .getResultList();
+        List<Book> actualBooks = jpqlBookRepository.findAll();
 
         assertThat(actualBooks).containsExactlyElementsOf(expectedBooks);
         actualBooks.forEach(System.out::println);
@@ -61,18 +73,23 @@ class JpqlBookRepositoryTest {
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
-        var expectedBook = new Book(
+
+        Book entityBook = new Book(
                 0,
                 "BookTitle_10500",
                 List.of(dbAuthors.get(0), dbAuthors.get(2)),
                 dbGenres.get(0)
         );
-        var returnedBook = repositoryJdbc.save(expectedBook);
+        Book expectedBook = em.persist(entityBook);
+        Book returnedBook = jpqlBookRepository.save(expectedBook);
+
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .isEqualTo(expectedBook);
 
-        assertThat(repositoryJdbc.findById(returnedBook.getId()))
+        assertThat(jpqlBookRepository.findById(returnedBook.getId()))
                 .isPresent()
                 .get()
                 .isEqualTo(returnedBook);
@@ -81,33 +98,34 @@ class JpqlBookRepositoryTest {
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
-        var expectedBook = new Book(1L, "BookTitle_10500",
-                List.of(dbAuthors.get(4), dbAuthors.get(5)), dbGenres.get(2));
 
-        assertThat(repositoryJdbc.findById(expectedBook.getId()))
-                .isPresent()
-                .get()
-                .isNotEqualTo(expectedBook);
+        Book expectedBook = em.find(Book.class, FIRST_BOOK_ID);
+        expectedBook.setTitle("bla bla");
+        em.persist(expectedBook);
 
-        var returnedBook = repositoryJdbc.save(expectedBook);
-        assertThat(returnedBook).isNotNull()
+        Optional<Book> actualBookContainer = jpqlBookRepository.findById(FIRST_BOOK_ID);
+        Book actualBook = actualBookContainer.get();
+        actualBook.setTitle("bla bla");
+        actualBook = jpqlBookRepository.save(actualBook);
+
+        assertThat(actualBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison()
                 .ignoringExpectedNullFields()
                 .isEqualTo(expectedBook);
 
-        assertThat(repositoryJdbc.findById(returnedBook.getId()))
+        assertThat(jpqlBookRepository.findById(actualBook.getId()))
                 .isPresent()
                 .get()
-                .isEqualTo(returnedBook);
+                .isEqualTo(actualBook);
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertThat(repositoryJdbc.findById(1L)).isPresent();
-        repositoryJdbc.deleteById(1L);
-        assertThat(repositoryJdbc.findById(1L)).isEmpty();
+        assertThat(jpqlBookRepository.findById(1L)).isPresent();
+        jpqlBookRepository.deleteById(1L);
+        assertThat(jpqlBookRepository.findById(1L)).isEmpty();
     }
 
     private static List<Author> getDbAuthors() {
