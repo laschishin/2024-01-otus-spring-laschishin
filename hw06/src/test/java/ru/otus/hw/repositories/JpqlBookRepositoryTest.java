@@ -1,5 +1,6 @@
 package ru.otus.hw.repositories;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,7 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,12 +28,18 @@ class JpqlBookRepositoryTest {
     private TestEntityManager em;
 
     private static final long FIRST_BOOK_ID = 1;
-    private static final Set<Long> AUTHORS_LIST = Set.of(1L, 2L);
-
+//    private static final Set<Long> AUTHORS_LIST = Set.of(1L, 2L);
 
     private List<Author> dbAuthors;
     private List<Genre> dbGenres;
-    private List<Book> dbBooks;
+//    private List<Book> dbBooks;
+
+    @BeforeEach
+    void setUp() {
+        dbAuthors = getDbAuthors();
+        dbGenres = getDbGenres();
+//        dbBooks = getDbBooks(dbAuthors, dbGenres);
+    }
 
 
     @DisplayName("должен загружать книгу по id")
@@ -74,38 +79,47 @@ class JpqlBookRepositoryTest {
     @Test
     void shouldSaveNewBook() {
 
-        Book entityBook = new Book(
+        Book expectedBook = new Book(
                 0,
                 "BookTitle_10500",
                 List.of(dbAuthors.get(0), dbAuthors.get(2)),
                 dbGenres.get(0)
         );
-        Book expectedBook = em.persist(entityBook);
-        Book returnedBook = jpqlBookRepository.save(expectedBook);
+        Book actualBook = jpqlBookRepository.save(expectedBook);
 
-        assertThat(returnedBook).isNotNull()
+        assertThat(actualBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison()
                 .ignoringExpectedNullFields()
                 .isEqualTo(expectedBook);
 
-        assertThat(jpqlBookRepository.findById(returnedBook.getId()))
+        assertThat(jpqlBookRepository.findById(actualBook.getId()))
                 .isPresent()
                 .get()
-                .isEqualTo(returnedBook);
+                .isEqualTo(actualBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")
     @Test
     void shouldSaveUpdatedBook() {
 
+        String bookTitle = "bla bla";
+        List<Author> bookAuthors = new ArrayList<>();
+        bookAuthors.add(dbAuthors.get(0));
+        bookAuthors.add(dbAuthors.get(3));
+        Genre bookGenre = dbGenres.get(1);
+
         Book expectedBook = em.find(Book.class, FIRST_BOOK_ID);
-        expectedBook.setTitle("bla bla");
+        expectedBook.setTitle(bookTitle);
+        expectedBook.setAuthors(bookAuthors);
+        expectedBook.setGenre(bookGenre);
+
         em.persist(expectedBook);
 
-        Optional<Book> actualBookContainer = jpqlBookRepository.findById(FIRST_BOOK_ID);
-        Book actualBook = actualBookContainer.get();
-        actualBook.setTitle("bla bla");
+        Book actualBook = jpqlBookRepository.findById(FIRST_BOOK_ID).get();
+        actualBook.setTitle(bookTitle);
+        actualBook.setAuthors(bookAuthors);
+        actualBook.setGenre(bookGenre);
         actualBook = jpqlBookRepository.save(actualBook);
 
         assertThat(actualBook).isNotNull()
@@ -123,9 +137,9 @@ class JpqlBookRepositoryTest {
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertThat(jpqlBookRepository.findById(1L)).isPresent();
-        jpqlBookRepository.deleteById(1L);
-        assertThat(jpqlBookRepository.findById(1L)).isEmpty();
+        assertThat(jpqlBookRepository.findById(FIRST_BOOK_ID)).isPresent();
+        jpqlBookRepository.deleteById(FIRST_BOOK_ID);
+        assertThat(jpqlBookRepository.findById(FIRST_BOOK_ID)).isEmpty();
     }
 
     private static List<Author> getDbAuthors() {
@@ -148,12 +162,6 @@ class JpqlBookRepositoryTest {
                         dbGenres.get(id - 1)
                 ))
                 .toList();
-    }
-
-    private static List<Book> getDbBooks() {
-        var dbAuthors = getDbAuthors();
-        var dbGenres = getDbGenres();
-        return getDbBooks(dbAuthors, dbGenres);
     }
 
 }

@@ -32,8 +32,15 @@ public class JpqlBookRepository implements BookRepository {
                 Book.class
         );
         query.setParameter("id", id);
-        return Optional.ofNullable(query.getSingleResult());
 
+        Book resultBook;
+        try {
+            resultBook = query.getSingleResult();
+        }
+        catch (jakarta.persistence.NoResultException e) {
+            return Optional.empty();
+        }
+        return Optional.of(resultBook);
     }
 
     @Override
