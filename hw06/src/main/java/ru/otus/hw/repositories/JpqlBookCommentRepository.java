@@ -4,10 +4,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.cache.spi.access.AccessType;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.BookComment;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -21,7 +24,10 @@ public class JpqlBookCommentRepository implements BookCommentRepository {
     @Override
     public Optional<BookComment> findById(long id) {
 
-        return Optional.ofNullable(em.find(BookComment.class, id));
+        Map<String, Object> queryHints = new HashMap<>();
+        queryHints.put("org.hibernate.readOnly", true);
+
+        return Optional.ofNullable(em.find(BookComment.class, id, queryHints));
     }
 
     @Override

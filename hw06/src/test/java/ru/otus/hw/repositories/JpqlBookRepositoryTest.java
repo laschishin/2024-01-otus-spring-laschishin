@@ -11,12 +11,14 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Репозиторий на основе Jdbc для работы с книгами ")
+@DisplayName("Репозиторий на основе Jpql для работы с книгами ")
 @DataJpaTest
 @Import({JpqlBookRepository.class, JpqlAuthorRepository.class})
 class JpqlBookRepositoryTest {
@@ -28,17 +30,14 @@ class JpqlBookRepositoryTest {
     private TestEntityManager em;
 
     private static final long FIRST_BOOK_ID = 1;
-//    private static final Set<Long> AUTHORS_LIST = Set.of(1L, 2L);
 
     private List<Author> dbAuthors;
     private List<Genre> dbGenres;
-//    private List<Book> dbBooks;
 
     @BeforeEach
     void setUp() {
         dbAuthors = getDbAuthors();
         dbGenres = getDbGenres();
-//        dbBooks = getDbBooks(dbAuthors, dbGenres);
     }
 
 
@@ -151,16 +150,6 @@ class JpqlBookRepositoryTest {
     private static List<Genre> getDbGenres() {
         return IntStream.range(1, 7).boxed()
                 .map(id -> new Genre(id, "Genre_" + id))
-                .toList();
-    }
-
-    private static List<Book> getDbBooks(List<Author> dbAuthors, List<Genre> dbGenres) {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> new Book(id,
-                        "BookTitle_" + id,
-                        dbAuthors.subList((id - 1) * 2, (id - 1) * 2 + 2),
-                        dbGenres.get(id - 1)
-                ))
                 .toList();
     }
 

@@ -13,7 +13,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Репозиторий на основе Jdbc для работы с авторами")
+@DisplayName("Репозиторий на основе Jpql для работы с авторами")
 @DataJpaTest
 @Import(JpqlAuthorRepository.class)
 class JpqlAuthorRepositoryTest {
