@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.hw.converters.BookConverter;
+import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.services.BookService;
 
 import java.util.Set;
@@ -29,6 +30,7 @@ public class BookCommands {
     @ShellMethod(value = "Find book by id", key = "bbid")
     public String findBookById(long id) {
         return bookService.findById(id)
+                .map(BookDto::toDomainObject)
                 .map(bookConverter::bookToString)
                 .orElse("Book with id %d not found".formatted(id));
     }

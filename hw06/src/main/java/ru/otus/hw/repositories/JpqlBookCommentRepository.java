@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.cache.spi.access.AccessType;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.BookComment;
 

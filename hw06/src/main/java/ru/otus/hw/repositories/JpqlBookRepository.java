@@ -22,25 +22,29 @@ public class JpqlBookRepository implements BookRepository {
     @Override
     public Optional<Book> findById(long id) {
 
-        TypedQuery<Book> query = em.createQuery("""
-                        select b
-                          from Book b
-                          join fetch b.genre
-                          left join fetch b.authors
-                         where b.id = :id
-                        """,
-                Book.class
-        );
-        query.setParameter("id", id);
+        Book book = em.find(Book.class, id);
 
-        Book resultBook;
-        try {
-            resultBook = query.getSingleResult();
-        }
-        catch (jakarta.persistence.NoResultException e) {
-            return Optional.empty();
-        }
-        return Optional.of(resultBook);
+        return Optional.ofNullable(book);
+
+//        TypedQuery<Book> query = em.createQuery("""
+//                        select b
+//                          from Book b
+//                          join b.genre
+//                          left join b.authors
+//                         where b.id = :id
+//                        """,
+//                Book.class
+//        );
+//        query.setParameter("id", id);
+
+//        Book resultBook;
+//        try {
+//            resultBook = query.getSingleResult();
+//        }
+//        catch (jakarta.persistence.NoResultException e) {
+//            return Optional.empty();
+//        }
+//        return Optional.of(resultBook);
     }
 
     @Override

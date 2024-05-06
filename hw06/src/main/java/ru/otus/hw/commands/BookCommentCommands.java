@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.hw.converters.BookCommentConverter;
+import ru.otus.hw.dto.BookCommentDto;
 import ru.otus.hw.services.BookCommentService;
 
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class BookCommentCommands {
     @ShellMethod(value = "Find comment by id", key = "cbid")
     public String findBookCommentById(long id) {
         return bookCommentService.findById(id)
+                .map(BookCommentDto::toDomainObject)
                 .map(bookCommentConverter::bookCommentToString)
                 .orElse("Comment with id %d has not been found".formatted(id));
 
@@ -27,6 +29,7 @@ public class BookCommentCommands {
     @ShellMethod(value = "Find all comments by book_id", key = "cbbid")
     public String findAllBookCommentsByBookId(long bookId) {
         return bookCommentService.findAllByBookId(bookId).stream()
+                .map(BookCommentDto::toDomainObject)
                 .map(bookCommentConverter::bookCommentToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }

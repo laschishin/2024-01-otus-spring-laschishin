@@ -1,14 +1,14 @@
 package ru.otus.hw.services;
 
-import ru.otus.hw.models.BookComment;
+import ru.otus.hw.dto.BookCommentDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BookCommentService {
 
-    Optional<BookComment> findById(long id);
+    Optional<BookCommentDto> findById(long id);
 
-    List<BookComment> findAllByBookId(long bookId);
+    List<BookCommentDto> findAllByBookId(long bookId);
 
 }

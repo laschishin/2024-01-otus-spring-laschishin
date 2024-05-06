@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class Book {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "book_authors",
@@ -29,6 +32,7 @@ public class Book {
     )
     private List<Author> authors;
 
+//    @Fetch(FetchMode.SUBSELECT)
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "genre_id")
     private Genre genre;
