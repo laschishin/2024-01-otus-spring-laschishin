@@ -1,8 +1,10 @@
 package ru.otus.hw.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dto.BookCommentDto;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.BookComment;
 import ru.otus.hw.repositories.BookCommentRepository;
 
@@ -26,7 +28,7 @@ public class BookCommentServiceImpl implements BookCommentService {
         }
 
         return Optional.of(
-                BookCommentDto.toDto(bookComment)
+                new BookCommentDto(bookComment)
         );
     }
 
@@ -35,7 +37,37 @@ public class BookCommentServiceImpl implements BookCommentService {
 
         List<BookComment> bookComments = bookCommentRepository.findAllByBookId(bookId);
         return bookComments.stream()
-                .map(BookCommentDto::toDto)
+                .map(BookCommentDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public BookCommentDto insert(long bookId, String text) {
+        BookComment comment = bookCommentRepository.save(
+                new BookComment(0, bookId, text)
+        );
+        return new BookCommentDto(comment);
+    }
+
+    @Override
+    @Transactional
+    public BookCommentDto update(long id, String text) {
+
+        BookComment comment = bookCommentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
+
+        comment.setTextContent(text);
+
+        return new BookCommentDto(
+                bookCommentRepository.save(comment)
+        );
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(long id) {
+        bookCommentRepository.deleteById(id);
     }
 }

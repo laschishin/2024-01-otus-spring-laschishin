@@ -21,7 +21,7 @@ public class AuthorServiceImpl implements AuthorService {
         List<Author> authors = authorRepository.findAll();
 
         return authors.stream()
-                .map(AuthorDto::toDto)
+                .map(AuthorDto::new)
                 .collect(Collectors.toList());
     }
 

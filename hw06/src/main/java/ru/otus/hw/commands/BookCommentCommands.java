@@ -34,4 +34,21 @@ public class BookCommentCommands {
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
+    @ShellMethod(value = "Insert comment", key = "cbins")
+    public String insertBookComment(long bookId, String text) {
+        BookCommentDto savedBookComment = bookCommentService.insert(bookId, text);
+        return bookCommentConverter.bookCommentToString(savedBookComment.toDomainObject());
+    }
+
+    @ShellMethod(value = "Update comment", key = "cbupd")
+    public String updateBookComment(long id, String text) {
+        BookCommentDto savedBookComment = bookCommentService.update(id, text);
+        return bookCommentConverter.bookCommentToString(savedBookComment.toDomainObject());
+    }
+
+    @ShellMethod(value = "Delete comment by id", key = "cbdel")
+    public void deleteBookComment(long id) {
+        bookCommentService.deleteById(id);
+    }
+
 }

@@ -26,25 +26,6 @@ public class JpqlBookRepository implements BookRepository {
 
         return Optional.ofNullable(book);
 
-//        TypedQuery<Book> query = em.createQuery("""
-//                        select b
-//                          from Book b
-//                          join b.genre
-//                          left join b.authors
-//                         where b.id = :id
-//                        """,
-//                Book.class
-//        );
-//        query.setParameter("id", id);
-
-//        Book resultBook;
-//        try {
-//            resultBook = query.getSingleResult();
-//        }
-//        catch (jakarta.persistence.NoResultException e) {
-//            return Optional.empty();
-//        }
-//        return Optional.of(resultBook);
     }
 
     @Override
@@ -79,6 +60,7 @@ public class JpqlBookRepository implements BookRepository {
         }
 
         em.remove(book);
+
     }
 
 }

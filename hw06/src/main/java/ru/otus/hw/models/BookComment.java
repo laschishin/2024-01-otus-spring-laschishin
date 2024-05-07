@@ -16,7 +16,7 @@ public class BookComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "book_id")
+    @Column(name = "book_id", nullable = false)
     private long bookId;
 
     @Column(name = "text_content", nullable = false)

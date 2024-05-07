@@ -29,13 +29,11 @@ public class BookDto {
         );
     }
 
-    public static BookDto toDto(Book book) {
-        return new BookDto(
-                book.getId(),
-                book.getTitle(),
-                AuthorDto.toDto(book.getAuthors()),
-                GenreDto.toDto(book.getGenre())
-        );
+    public BookDto(Book book) {
+        this.id = book.getId();
+        this.title = book.getTitle();
+        this.authors = AuthorDto.toDto(book.getAuthors());
+        this.genre = new GenreDto(book.getGenre());
     }
 
 }

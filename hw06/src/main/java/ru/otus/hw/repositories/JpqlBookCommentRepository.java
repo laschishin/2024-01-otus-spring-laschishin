@@ -43,4 +43,31 @@ public class JpqlBookCommentRepository implements BookCommentRepository {
 
     }
 
+    @Override
+    public BookComment save(BookComment comment) {
+        if(comment.getId() == 0) {
+            em.persist(comment);
+            return comment;
+        }
+        BookComment bc = new BookComment(
+                comment.getId(),
+                comment.getBookId(),
+                comment.getTextContent()
+        );
+        return em.merge(bc);
+    }
+
+    @Override
+    public void deleteById(long id) {
+
+        BookComment comment = em.find(BookComment.class, id);
+
+        if (comment == null) {
+            throw new IllegalArgumentException("No comment found for id %d".formatted(id));
+        }
+
+        em.remove(comment);
+
+    }
+
 }

@@ -20,7 +20,7 @@ public class GenreServiceImpl implements GenreService {
     public List<GenreDto> findAll() {
         List<Genre> genreList = genreRepository.findAll();
         return genreList.stream()
-                .map(GenreDto::toDto)
+                .map(GenreDto::new)
                 .collect(Collectors.toList());
     }
 

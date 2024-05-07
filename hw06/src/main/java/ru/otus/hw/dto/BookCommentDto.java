@@ -19,12 +19,10 @@ public class BookCommentDto {
         return new BookComment(id, bookId, textContent);
     }
 
-    public static BookCommentDto toDto(BookComment comment) {
-        return new BookCommentDto(
-                comment.getId(),
-                comment.getBookId(),
-                comment.getTextContent()
-        );
+    public BookCommentDto(BookComment comment) {
+        this.id = comment.getId();
+        this.bookId = comment.getBookId();
+        this.textContent = comment.getTextContent();
     }
 
 }

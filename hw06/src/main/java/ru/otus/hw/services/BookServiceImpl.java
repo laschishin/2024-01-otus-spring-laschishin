@@ -36,7 +36,7 @@ public class BookServiceImpl implements BookService {
             return Optional.empty();
         }
         return Optional.of(
-                BookDto.toDto(book)
+                new BookDto(book)
         );
     }
 
