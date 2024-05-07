@@ -20,6 +20,7 @@ public class JpqlAuthorRepository implements AuthorRepository {
     
     @Override
     public List<Author> findAll() {
+
         TypedQuery<Author> query = em.createQuery("""
                         select a
                           from Author a
@@ -27,10 +28,12 @@ public class JpqlAuthorRepository implements AuthorRepository {
                 Author.class
         );
         return query.getResultList();
+
     }
 
     @Override
     public List<Author> findAllByIds(Set<Long> ids) {
+
         TypedQuery<Author> query = em.createQuery("""
                         select a
                           from Author a
@@ -40,6 +43,7 @@ public class JpqlAuthorRepository implements AuthorRepository {
         );
         query.setParameter("ids", ids);
         return query.getResultList();
+
     }
 
 }

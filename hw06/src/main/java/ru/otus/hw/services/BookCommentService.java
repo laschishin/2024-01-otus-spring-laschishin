@@ -1,8 +1,6 @@
 package ru.otus.hw.services;
 
-import jakarta.transaction.Transactional;
 import ru.otus.hw.dto.BookCommentDto;
-import ru.otus.hw.models.BookComment;
 
 import java.util.List;
 import java.util.Optional;

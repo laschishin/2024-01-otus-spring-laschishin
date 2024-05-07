@@ -17,7 +17,7 @@ public class BookCommentCommands {
 
     private final BookCommentConverter bookCommentConverter;
 
-    @ShellMethod(value = "Find comment by id", key = "cbid")
+    @ShellMethod(value = "Find comment by id", key = "bcbid")
     public String findBookCommentById(long id) {
         return bookCommentService.findById(id)
                 .map(BookCommentDto::toDomainObject)
@@ -26,7 +26,7 @@ public class BookCommentCommands {
 
     }
 
-    @ShellMethod(value = "Find all comments by book_id", key = "cbbid")
+    @ShellMethod(value = "Find all comments by book_id", key = "bcbbid")
     public String findAllBookCommentsByBookId(long bookId) {
         return bookCommentService.findAllByBookId(bookId).stream()
                 .map(BookCommentDto::toDomainObject)
@@ -34,19 +34,19 @@ public class BookCommentCommands {
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
 
-    @ShellMethod(value = "Insert comment", key = "cbins")
+    @ShellMethod(value = "Insert comment", key = "bcins")
     public String insertBookComment(long bookId, String text) {
         BookCommentDto savedBookComment = bookCommentService.insert(bookId, text);
         return bookCommentConverter.bookCommentToString(savedBookComment.toDomainObject());
     }
 
-    @ShellMethod(value = "Update comment", key = "cbupd")
+    @ShellMethod(value = "Update comment", key = "bcupd")
     public String updateBookComment(long id, String text) {
         BookCommentDto savedBookComment = bookCommentService.update(id, text);
         return bookCommentConverter.bookCommentToString(savedBookComment.toDomainObject());
     }
 
-    @ShellMethod(value = "Delete comment by id", key = "cbdel")
+    @ShellMethod(value = "Delete comment by id", key = "bcdel")
     public void deleteBookComment(long id) {
         bookCommentService.deleteById(id);
     }

@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.hw.converters.BookConverter;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.services.BookService;
 
 import java.util.Set;
@@ -23,6 +24,7 @@ public class BookCommands {
     @ShellMethod(value = "Find all books", key = "ab")
     public String findAllBooks() {
         return bookService.findAll().stream()
+                .map(BookDto::toDomainObject)
                 .map(bookConverter::bookToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
@@ -38,14 +40,14 @@ public class BookCommands {
     // bins newBook 1 1,6
     @ShellMethod(value = "Insert book", key = "bins")
     public String insertBook(String title, Set<Long> authorsIds, long genreId) {
-        var savedBook = bookService.insert(title, authorsIds, genreId);
+        Book savedBook = bookService.insert(title, authorsIds, genreId).toDomainObject();
         return bookConverter.bookToString(savedBook);
     }
 
     // bupd 4 editedBook 3 2,5
     @ShellMethod(value = "Update book", key = "bupd")
     public String updateBook(long id, String title, Set<Long> authorsIds, long genreId) {
-        var savedBook = bookService.update(id, title, authorsIds, genreId);
+        Book savedBook = bookService.update(id, title, authorsIds, genreId).toDomainObject();
         return bookConverter.bookToString(savedBook);
     }
 

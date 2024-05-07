@@ -51,7 +51,7 @@ class JpqlBookCommentRepositoryTest {
                 .createQuery("""
                         select bc
                           from BookComment bc
-                         where bc.bookId = :book_id
+                         where bc.book.id = :book_id
                         """)
                 .setParameter("book_id", FIRST_BOOK_ID)
                 .getResultList();

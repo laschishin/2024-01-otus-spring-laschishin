@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 
@@ -30,27 +31,32 @@ public class JpqlBookRepository implements BookRepository {
 
     @Override
     public List<Book> findAll() {
+
         TypedQuery<Book> query = em.createQuery("""
                         select b
                           from Book b
-                          join fetch b.genre
-                          left join fetch b.authors
+                          join b.genre
+                          left join b.authors
                         """,
                 Book.class
         );
         return query.getResultList();
+
     }
 
     @Override
     public Book save(Book book) {
+
         if (book.getId() == 0) {
             em.persist(book);
             return book;
         }
         return em.merge(book);
+
     }
 
     @Override
+    @Transactional
     public void deleteById(long id) {
 
         Book book = em.find(Book.class, id);
