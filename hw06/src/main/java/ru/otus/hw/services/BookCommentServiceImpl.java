@@ -82,6 +82,7 @@ public class BookCommentServiceImpl implements BookCommentService {
     }
 
     @Override
+    @Transactional
     public void deleteById(long id) {
         bookCommentRepository.deleteById(id);
     }
