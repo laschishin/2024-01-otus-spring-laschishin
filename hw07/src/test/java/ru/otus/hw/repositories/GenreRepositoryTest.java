@@ -42,11 +42,9 @@ class GenreRepositoryTest {
     void shouldReturnCorrectGenreById() {
 
         Genre expectedGenre = em.find(Genre.class, FIRST_GENRE_ID);
-        Optional<Genre> actualGenre = genreRepository.findById(FIRST_GENRE_ID);
+        Genre actualGenre = genreRepository.getReferenceById(FIRST_GENRE_ID);
 
         assertThat(actualGenre)
-                .isPresent()
-                .get()
                 .isEqualTo(expectedGenre);
     }
 
