@@ -1,0 +1,29 @@
+    body {
+        padding: 50px;
+    }
+
+    label {
+        display: inline-block;
+        width: 100px;
+    }
+
+    input:read-only {
+        background: lightgray;
+    }
+
+    form > div {
+        margin: 10px;
+    }
+
+    .list-table {
+        border: 1px solid black;
+    }
+
+    .list-table tr td, th {
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    .errors {
+        color: red;
+    }

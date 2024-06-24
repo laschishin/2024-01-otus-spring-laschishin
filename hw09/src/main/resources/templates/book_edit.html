@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit book</title>
+    <link rel="stylesheet" href="../static/styles.css" th:href='@{/styles.css}'>
+</head>
+<body>
+
+<h3>Book details</h3>
+
+
+<form id="edit-form"
+      action="book_edit.html"
+      th:method="post"
+      th:action="@{/edit(id=${book.id})}"
+      th:object="${book}">
+
+    <div>
+        <label for="id-input" class="col-md-1 control-label">ID</label>
+        <input id="id-input"
+               class="form-control"
+               type="text"
+               readonly="readonly"
+               value="1"
+               th:value="*{id}">
+    </div>
+
+    <div>
+        <label for="book-title-input" class="col-md-1 control-label">Title</label>
+        <input id="book-title-input"
+               class="form-control"
+               name="title"
+               type="text"
+               value="Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools"
+               th:value="*{title}">
+    </div>
+
+    <div>
+        <label for="book-authors-input" class="col-md-1 control-label">Authors</label>
+        <select id="book-authors-input"
+                class="form-control"
+                multiple
+                name="authors"
+                th:each="author : ${all_authors}">
+            <option th:value="${author.value}" th:selected="${author.selected}" th:text="${author.text}">Iuliana Cosmina</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="book-genre-input" class="col-md-1 control-label">Genre</label>
+        <select id="book-genre-input"
+                class="form-control"
+                name="genre"
+                th:value="*{genre}">
+            <option value="Rob Harrop">Professional literature</option>
+        </select>
+    </div>
+
+    <div>
+        <button type="submit" class="btn">Save</button>
+        <a href="books_list.html" class="btn" th:href="@{/}">
+            <button type="button" class="btn">Cancel</button>
+        </a>
+    </div>
+</form>
+</body>
+</html>
