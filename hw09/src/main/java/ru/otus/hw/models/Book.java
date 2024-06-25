@@ -32,7 +32,7 @@ public class Book {
     )
     private List<Author> authors;
 
-//    @Fetch(FetchMode.SUBSELECT)
+    //    @Fetch(FetchMode.SUBSELECT)
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "genre_id")
     private Genre genre;

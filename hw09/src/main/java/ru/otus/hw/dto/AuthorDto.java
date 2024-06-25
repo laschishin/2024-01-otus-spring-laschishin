@@ -14,10 +14,6 @@ public class AuthorDto {
 
     private String fullName;
 
-    public Author toDomainObject() {
-        return new Author(id, fullName);
-    }
-
     public AuthorDto(Author author) {
         this.id = author.getId();
         this.fullName = author.getFullName();
@@ -27,6 +23,10 @@ public class AuthorDto {
         return authors.stream()
                 .map(AuthorDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public Author toDomainObject() {
+        return new Author(id, fullName);
     }
 
 }

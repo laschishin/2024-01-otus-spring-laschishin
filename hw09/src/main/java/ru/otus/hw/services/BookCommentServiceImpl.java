@@ -30,7 +30,7 @@ public class BookCommentServiceImpl implements BookCommentService {
         BookComment bookComment = bookCommentRepository.findById(id)
                 .orElse(null);
 
-        if(bookComment == null){
+        if (bookComment == null) {
             return Optional.empty();
         }
 
@@ -56,7 +56,7 @@ public class BookCommentServiceImpl implements BookCommentService {
     public BookCommentDto insert(long bookId, String text) {
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)) );
+                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
 
         BookComment comment = bookCommentRepository.save(
                 new BookComment(0, book, text)

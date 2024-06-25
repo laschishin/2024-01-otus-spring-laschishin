@@ -35,7 +35,7 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(id)
                 .orElse(null);
 
-        if(book == null) {
+        if (book == null) {
             return Optional.empty();
         }
         return Optional.of(
@@ -48,7 +48,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public List<BookDto> findAll() {
 
-        List<Book> books =  bookRepository.findAll();
+        List<Book> books = bookRepository.findAll();
 
         return books.stream()
                 .map(BookDto::new)

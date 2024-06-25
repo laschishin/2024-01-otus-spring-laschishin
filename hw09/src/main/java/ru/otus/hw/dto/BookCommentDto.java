@@ -16,14 +16,14 @@ public class BookCommentDto {
 
     private String textContent;
 
-    public BookComment toDomainObject() {
-        return new BookComment(id, book, textContent);
-    }
-
     public BookCommentDto(BookComment comment) {
         this.id = comment.getId();
         this.book = comment.getBook();
         this.textContent = comment.getTextContent();
+    }
+
+    public BookComment toDomainObject() {
+        return new BookComment(id, book, textContent);
     }
 
 }

@@ -16,6 +16,6 @@ spring:
     properties:
       hibernate.format_sql: true
 
-logging:
-  level:
-    ROOT: INFO
+#logging:
+#  level:
+#    ROOT: ERROR

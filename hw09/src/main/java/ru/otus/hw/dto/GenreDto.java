@@ -11,13 +11,13 @@ public class GenreDto {
 
     private String name;
 
-    public Genre toDomainObject() {
-        return new Genre(id, name);
-    }
-
     public GenreDto(Genre genre) {
         this.id = genre.getId();
         this.name = genre.getName();
+    }
+
+    public Genre toDomainObject() {
+        return new Genre(id, name);
     }
 
 }
