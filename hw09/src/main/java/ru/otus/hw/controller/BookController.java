@@ -1,51 +1,87 @@
 package ru.otus.hw.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.hw.dto.AuthorDto;
-import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.dto.BookEditAuthorDto;
-import ru.otus.hw.services.AuthorService;
-import ru.otus.hw.services.BookService;
-import ru.otus.hw.services.book_edit.BookEditService;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.services.web.ListBooksService;
+import ru.otus.hw.services.web.SingleBookService;
 
 @Controller
 @RequiredArgsConstructor
 public class BookController {
 
-    private final BookService bookService;
-    private final AuthorService authorService;
-    private final BookEditService bookEditService;
+    private final ListBooksService listBooksService;
+    private final SingleBookService singleBookService;
 
 
     @GetMapping("/")
     public String listBooks(Model model) {
-        List<BookDto> books = bookService.findAll();
-        model.addAttribute("books", books);
+
+        model.addAllAttributes(
+                listBooksService.listBooksGetAttributes());
+
         return "books_list";
     }
 
-    @GetMapping("/book/edit/{Id}")
-    public String editBook(@PathVariable long Id, Model model) {
+    @GetMapping("/book/create")
+    public String createBook(Model model) {
 
-        BookDto book = bookService.findById(Id)
-                .orElseThrow(EntityNotFoundException::new);
-        model.addAttribute("book", book);
-
-        List<AuthorDto> authors = authorService.findAll().stream()
-                .filter(author -> !book.getAuthorIds().contains(author.getId()))
-                .toList();
-        List<BookEditAuthorDto> authorsList = bookEditService.prepareAuthorsList(book, authors);
-        model.addAttribute("authors_list", authorsList);
+        model.addAllAttributes(
+                singleBookService.createBookGetAttributes()
+        );
 
         return "book_edit";
+
+    }
+
+    @GetMapping("/book/edit/{bookId}")
+    public String editBook(@PathVariable long bookId, Model model) {
+
+        model.addAllAttributes(
+                singleBookService.editBookGetAttributes(bookId)
+        );
+
+        return "book_edit";
+    }
+
+    @PostMapping("/book/edit/{bookId}")
+    public String updateBook(Book book, Model model) {
+
+        singleBookService.processUpdateBook(book);
+
+        model.addAllAttributes(
+                listBooksService.listBooksGetAttributes()
+        );
+
+        return "redirect:/";
+
+    }
+
+    @GetMapping("/book/delete/{bookId}")
+    public String confirmDeleteBook(@PathVariable long bookId, Model model) {
+
+
+        model.addAllAttributes(
+                singleBookService.deleteBookGetAttributes(bookId)
+        );
+
+        return "book_delete_confirm";
+    }
+
+    @PostMapping("/book/delete/{bookId}")
+    public String deleteBook(@PathVariable long bookId, Model model) {
+
+        singleBookService.processDeleteBook(bookId);
+
+        model.addAllAttributes(
+                listBooksService.listBooksGetAttributes()
+        );
+
+        return "redirect:/";
     }
 
 }

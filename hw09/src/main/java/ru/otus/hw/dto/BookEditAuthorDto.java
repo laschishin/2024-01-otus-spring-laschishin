@@ -8,20 +8,16 @@ import lombok.Setter;
 @Setter
 public class BookEditAuthorDto {
 
-    private AuthorDto author;
+    private long id;
 
-    private String fullNameDashed;
+    private String fullName;
 
-    private Boolean isSelected;
+    private boolean isSelected;
 
     public BookEditAuthorDto(AuthorDto author) {
-        this.author = author;
+        this.id = author.getId();
+        this.fullName = author.getFullName();
+        this.isSelected = false;
     }
-
-//    public static List<BookEditAuthorDto> toDto(List<Author> authors) {
-//        return authors.stream()
-//                .map(BookEditAuthorDto::new)
-//                .collect(Collectors.toList());
-//    }
 
 }

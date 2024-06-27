@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Books</title>
-    <link rel="stylesheet" href="../static/styles.css" th:href='@{/styles.css}'>
+    <link href="../static/styles.css" rel="stylesheet" th:href='@{/styles.css}'>
 </head>
 <body>
 
 <h3>Books</h3>
 
+<div>
+    <a href="#" th:href="@{/book/create}">
+        <button type="button">Create new book</button>
+    </a>
+</div>
 
 <table class="list-table">
     <thead>
@@ -27,6 +32,9 @@
         <td th:text="${book.genre.name}">Professional literature</td>
         <td>
             <a href="book_edit.html" th:href="@{/book/edit/__${book.id}__}">Edit</a>
+        </td>
+        <td>
+            <a href="book_edit.html" th:href="@{/book/delete/__${book.id}__}">Delete</a>
         </td>
     </tr>
     </tbody>

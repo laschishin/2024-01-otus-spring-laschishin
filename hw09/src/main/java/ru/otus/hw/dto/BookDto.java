@@ -3,6 +3,7 @@ package ru.otus.hw.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.otus.hw.models.Book;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BookDto {
 
     private long id;
