@@ -15,6 +15,15 @@
         margin: 10px;
     }
 
+    .top_menu {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .top_menu a {
+        margin-right: 10px;
+    }
+
     .list-table {
         border: 1px solid black;
     }
