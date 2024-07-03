@@ -7,6 +7,7 @@ import ru.otus.hw.dto.*;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.services.AuthorService;
+import ru.otus.hw.services.BookCommentService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
@@ -22,6 +23,7 @@ public class SingleBookService {
     private final AuthorService authorService;
     private final GenreService genreService;
     private final BookRepository bookRepository;
+    private final BookCommentService bookCommentService;
 
 
     public Map<String, Object> createBookGetAttributes() {
@@ -63,6 +65,22 @@ public class SingleBookService {
         List<GenreDto> genresFullList = genreService.findAll();
         List<BookEditGenreDto> genresForViewList = prepareGenresList(book, genresFullList);
         viewEntities.put("genres_list", genresForViewList);
+
+        return viewEntities;
+
+    }
+
+
+    public Map<String, Object> viewBookGetAttributes(long bookId) {
+
+        Map<String, Object> viewEntities = new HashMap<>();
+
+        BookDto book = bookService.findById(bookId)
+                .orElseThrow(EntityNotFoundException::new);
+        viewEntities.put("book", book);
+
+        List<BookCommentDto> bookCommentsList = bookCommentService.findAllByBookId(bookId);
+        viewEntities.put("book_comments", bookCommentsList);
 
         return viewEntities;
 

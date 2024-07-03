@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>View book</title>
+    <link href="../static/styles.css" rel="stylesheet" th:href='@{/styles.css}'>
+</head>
+<body>
+
+<h3>Book details</h3>
+
+<div th:insert="~{top_menu :: top_menu}"></div>
+
+<div>
+    <span>ID: </span>
+    <span th:text="${book.id}">1</span>
+</div>
+
+<div>
+    <span>Title: </span>
+    <span th:text="${book.title}">Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools</span>
+</div>
+
+<div>
+    <span>Authors: </span>
+    <span th:text="${book.getAuthorsFullNames()}">Iuliana Cosmina</span>
+</div>
+
+<div>
+    <span>Genre: </span>
+    <span th:text="${book.genre.getName()}">Professional literature</span>
+</div>
+
+<div>
+    <a href="books_edit.html" th:href="@{/book/edit/__${book.id}__}">
+        <button type="button">Edit book</button>
+    </a>
+    <a href="books_edit.html" th:href="@{/}">
+        <button type="button">Back</button>
+    </a>
+</div>
+
+<div>
+
+    <h4>Comments</h4>
+
+
+    <div class="book_comment" th:each="comment : ${book_comments}">
+        <span th:text="${comment.textContent}">Comment 1</span>
+    </div>
+</div>
+
+</body>
+</html>

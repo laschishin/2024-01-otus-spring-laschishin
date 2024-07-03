@@ -48,14 +48,20 @@ public class BookController {
         return "book_edit";
     }
 
+    @GetMapping("/book/view/{bookId}")
+    public String viewBook(@PathVariable long bookId, Model model) {
+
+        model.addAllAttributes(
+                singleBookService.viewBookGetAttributes(bookId)
+        );
+
+        return "book_view";
+    }
+
     @PostMapping("/book/edit/{bookId}")
     public String updateBook(Book book, Model model) {
 
         singleBookService.processUpdateBook(book);
-
-        model.addAllAttributes(
-                listBooksService.listBooksGetAttributes()
-        );
 
         return "redirect:/";
 

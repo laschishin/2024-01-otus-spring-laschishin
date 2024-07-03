@@ -56,32 +56,6 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    @Override
-    @Transactional
-    public BookDto insert(String title, Set<Long> authorsIds, long genresId) {
-
-        Book book = save(0, title, authorsIds, genresId);
-
-        return new BookDto(book);
-
-    }
-
-    @Override
-    @Transactional
-    public BookDto update(long id, String title, Set<Long> authorsIds, long genresId) {
-
-        Book book = save(id, title, authorsIds, genresId);
-
-        return new BookDto(book);
-
-    }
-
-    @Override
-    @Transactional
-    public void deleteById(long id) {
-        bookRepository.deleteById(id);
-    }
-
     private Book save(long id, String title, Set<Long> authorsIds, long genreId) {
 
         if (isEmpty(authorsIds)) {

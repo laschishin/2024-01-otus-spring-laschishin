@@ -12,10 +12,4 @@ public interface BookService {
 
     List<BookDto> findAll();
 
-    BookDto insert(String title, Set<Long> authorsIds, long genresId);
-
-    BookDto update(long id, String title, Set<Long> authorsIds, long genresId);
-
-    void deleteById(long id);
-
 }

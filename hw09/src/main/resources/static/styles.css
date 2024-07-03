@@ -33,6 +33,14 @@
         border: 1px solid black;
     }
 
+    .book_comment {
+        border: solid 1px;
+        margin: 10px;
+    }
+    .book_comment span {
+        padding: 5px
+    }
+
     .errors {
         color: red;
     }

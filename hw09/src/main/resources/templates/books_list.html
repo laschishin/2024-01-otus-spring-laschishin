@@ -29,7 +29,10 @@
     <tbody>
     <tr th:each="book : ${books}">
         <td th:text="${book.id}">1</td>
-        <td th:text="${book.title}">Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools</td>
+        <td>
+            <a th:href="@{/book/view/__${book.id}__}"
+               th:text="${book.title}">Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools</a>
+        </td>
         <td th:text="${book.getAuthorsFullNames()}"> Iuliana Cosmina, Rob Harrop</td>
         <td th:text="${book.genre.name}">Professional literature</td>
         <td>
