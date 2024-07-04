@@ -2,37 +2,24 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Edit book</title>
+    <title>Create book</title>
     <link href="../static/styles.css" rel="stylesheet" th:href='@{/styles.css}'>
 </head>
 <body>
 
-<h3>Book details</h3>
+<h3>Create book</h3>
 
-
-<form action="book_edit.html"
+<form action="book_create.html"
       id="edit-form"
-      th:action="@{/book/edit/__${book.id}__}"
-      th:method="post"
-      th:object="${book}">
-
-    <div>
-        <label for="id-input">ID</label>
-        <input id="id-input"
-               name="id"
-               readonly="readonly"
-               th:value="*{id}"
-               type="text"
-               value="1">
-    </div>
+      th:action="@{/book/create}"
+      th:method="post">
 
     <div>
         <label for="book-title-input">Title</label>
         <input id="book-title-input"
                name="title"
-               th:value="*{title}"
                type="text"
-               value="Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools">
+               value="">
     </div>
 
     <div>
@@ -43,7 +30,7 @@
             <option th:each="author: ${authors}"
                     th:selected="${author.isSelected}"
                     th:text="${author.getFullName}"
-                    th:value="${author.getId}">Iuliana Cosmina
+                    th:value="${author.getId}">
             </option>
         </select>
     </div>
@@ -55,7 +42,7 @@
             <option th:each="genre: ${genres}"
                     th:selected="${genre.isSelected}"
                     th:text="${genre.getName}"
-                    th:value="${genre.getId}">Professional literature
+                    th:value="${genre.getId}">
             </option>
         </select>
     </div>

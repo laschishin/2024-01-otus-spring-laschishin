@@ -26,72 +26,67 @@ public class SingleBookService {
     private final BookCommentService bookCommentService;
 
 
-    public Map<String, Object> createBookGetAttributes() {
+    public Map<String, Object> getTemplateVariablesEmptyBook() {
 
-        Map<String, Object> viewEntities = new HashMap<>();
+        Map<String, Object> templateVariables = new HashMap<>();
 
-        viewEntities.put("book", new BookDto());
-
-        List<AuthorDto> authorsFullList = authorService.findAll();
-        List<BookEditAuthorDto> authorsForViewList = authorsFullList.stream()
+        List<BookEditAuthorDto> authorsFullList = authorService.findAll().stream()
                 .map(BookEditAuthorDto::new)
                 .toList();
-        viewEntities.put("authors_list", authorsForViewList);
+        templateVariables.put("authors", authorsFullList);
 
-
-        List<GenreDto> genresFullList = genreService.findAll();
-        List<BookEditGenreDto> genresForViewList = genresFullList.stream()
+        List<BookEditGenreDto> genresFullList = genreService.findAll().stream()
                 .map(BookEditGenreDto::new)
                 .toList();
-        viewEntities.put("genres_list", genresForViewList);
+        templateVariables.put("genres", genresFullList);
 
-        return viewEntities;
-
+        return templateVariables;
     }
 
-
-    public Map<String, Object> editBookGetAttributes(long bookId) {
-
-        Map<String, Object> viewEntities = new HashMap<>();
-
-        BookDto book = bookService.findById(bookId)
-                .orElseThrow(EntityNotFoundException::new);
-        viewEntities.put("book", book);
-
-        List<AuthorDto> authorsFullList = authorService.findAll();
-        List<BookEditAuthorDto> authorsForViewList = prepareAuthorsList(book, authorsFullList);
-        viewEntities.put("authors_list", authorsForViewList);
-
-        List<GenreDto> genresFullList = genreService.findAll();
-        List<BookEditGenreDto> genresForViewList = prepareGenresList(book, genresFullList);
-        viewEntities.put("genres_list", genresForViewList);
-
-        return viewEntities;
-
-    }
-
-
-    public Map<String, Object> viewBookGetAttributes(long bookId) {
-
-        Map<String, Object> viewEntities = new HashMap<>();
-
-        BookDto book = bookService.findById(bookId)
-                .orElseThrow(EntityNotFoundException::new);
-        viewEntities.put("book", book);
-
-        List<BookCommentDto> bookCommentsList = bookCommentService.findAllByBookId(bookId);
-        viewEntities.put("book_comments", bookCommentsList);
-
-        return viewEntities;
-
-    }
-
-    public void processUpdateBook(Book book) {
-
+    public void processCreateBook(Book book) {
         bookRepository.save(book);
     }
 
-    public Map<String, Object> deleteBookGetAttributes(long bookId) {
+
+    public Map<String, Object> getTemplateVariablesEditBookForm(long bookId) {
+
+        Map<String, Object> templateVariables = new HashMap<>();
+
+        BookDto book = bookService.findById(bookId)
+                .orElseThrow(EntityNotFoundException::new);
+        templateVariables.put("book", book);
+
+        List<AuthorDto> authorsFullList = authorService.findAll();
+        List<BookEditAuthorDto> authorsForViewList = prepareAuthorsList(book, authorsFullList);
+        templateVariables.put("authors", authorsForViewList);
+
+        List<GenreDto> genresFullList = genreService.findAll();
+        List<BookEditGenreDto> genresForViewList = prepareGenresList(book, genresFullList);
+        templateVariables.put("genres", genresForViewList);
+
+        return templateVariables;
+    }
+
+
+    public Map<String, Object> getTemplateVariablesViewBook(long bookId) {
+
+        Map<String, Object> templateVariables = new HashMap<>();
+
+        BookDto book = bookService.findById(bookId)
+                .orElseThrow(EntityNotFoundException::new);
+        templateVariables.put("book", book);
+
+        List<BookCommentDto> bookCommentsList = bookCommentService.findAllByBookId(bookId);
+        templateVariables.put("book_comments", bookCommentsList);
+
+        return templateVariables;
+    }
+
+    public void processUpdateBook(Book book) {
+        bookRepository.save(book);
+    }
+
+    public Map<String, Object> getTemplateVariablesDeleteBook(long bookId) {
 
         Map<String, Object> viewEntities = new HashMap<>();
 
@@ -104,7 +99,6 @@ public class SingleBookService {
         viewEntities.put("genre", book.getGenre());
 
         return viewEntities;
-
     }
 
     public void processDeleteBook(long bookId) {
