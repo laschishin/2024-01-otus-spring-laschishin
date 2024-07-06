@@ -24,6 +24,10 @@
         margin-right: 10px;
     }
 
+    .status_error {
+        color:red;
+    }
+
     .list-table {
         border: 1px solid black;
     }

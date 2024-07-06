@@ -4,6 +4,8 @@
     <meta charset="UTF-8"/>
     <title>Books</title>
     <link href="../static/styles.css" rel="stylesheet" th:href='@{/styles.css}'>
+    <link href="../static/js.js" rel="" th:href='@{/js.js}'>
+    <script src="../static/js.js" th:src='@{/js.js}'></script>
 </head>
 <body>
 
@@ -17,7 +19,7 @@
     </a>
 </div>
 
-<table class="list-table">
+<table class="list-table" id="books-table">
     <thead>
     <tr>
         <th>ID</th>
@@ -27,23 +29,16 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="book : ${books}">
-        <td th:text="${book.id}">1</td>
-        <td>
-            <a th:href="@{/book/view/__${book.id}__}"
-               th:text="${book.title}">Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools</a>
-        </td>
-        <td th:text="${book.getAuthorsFullNames()}"> Iuliana Cosmina, Rob Harrop</td>
-        <td th:text="${book.genre.name}">Professional literature</td>
-        <td>
-            <a href="book_edit.html" th:href="@{/book/edit/__${book.id}__}">Edit</a>
-        </td>
-        <td>
-            <a href="book_edit.html" th:href="@{/book/delete/__${book.id}__}">Delete</a>
-        </td>
-    </tr>
     </tbody>
 </table>
+
+<div>
+    <span class="status_error" id="error_box" hidden ></span>
+</div>
+
+<script defer>
+    fillBooksTable()
+</script>
 
 </body>
 </html>
