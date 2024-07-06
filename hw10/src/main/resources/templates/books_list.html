@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Books</title>
+    <link href="../static/styles.css" rel="stylesheet" th:href='@{/styles.css}'>
+</head>
+<body>
+
+<h3>Books</h3>
+
+<div th:insert="~{top_menu :: top_menu}"></div>
+
+<div>
+    <a href="#" th:href="@{/book/create}">
+        <button type="button">Create new book</button>
+    </a>
+</div>
+
+<table class="list-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Authors</th>
+        <th>Genre</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}">1</td>
+        <td>
+            <a th:href="@{/book/view/__${book.id}__}"
+               th:text="${book.title}">Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools</a>
+        </td>
+        <td th:text="${book.getAuthorsFullNames()}"> Iuliana Cosmina, Rob Harrop</td>
+        <td th:text="${book.genre.name}">Professional literature</td>
+        <td>
+            <a href="book_edit.html" th:href="@{/book/edit/__${book.id}__}">Edit</a>
+        </td>
+        <td>
+            <a href="book_edit.html" th:href="@{/book/delete/__${book.id}__}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
