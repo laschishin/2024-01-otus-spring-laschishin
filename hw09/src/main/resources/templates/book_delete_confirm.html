@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit book</title>
+    <link href="../static/styles.css" rel="stylesheet" th:href='@{/styles.css}'>
+</head>
+<body>
+
+<h3>Book delete confirmation</h3>
+
+<h3>Are you sure?</h3>
+
+<form action="book_delete_confirm.html"
+      id="edit-form"
+      th:action="@{/book/delete/__${book.id}__}"
+      th:method="post"
+      th:object="${book}">
+
+    <div>
+        <label for="id-input">ID</label>
+        <input id="id-input"
+               readonly="readonly"
+               th:value="*{id}"
+               type="text"
+               value="1">
+    </div>
+
+    <div>
+        <label for="book-title-input">Title</label>
+        <input id="book-title-input"
+               readonly="readonly"
+               th:value="*{title}"
+               type="text"
+               value="Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools">
+    </div>
+
+    <div>
+        <label for="book-authors-input">Authors</label>
+        <select disabled
+                id="book-authors-input"
+                multiple>
+            <option th:each="author: ${authors_list}"
+                    th:text="${author.getFullName}"
+                    th:value="${author.getId}">Iuliana Cosmina
+            </option>
+        </select>
+    </div>
+
+    <div>
+        <label for="book-genre-input">Genre</label>
+        <input id="book-genre-input"
+               readonly="readonly"
+               th:value="${genre.getName}"
+               value="Professional literature">
+    </div>
+
+    <div>
+        <button class="btn" type="submit">Yes, delete book</button>
+        <a href="books_list.html" th:href="@{/}">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+
+</form>
+</body>
+</html>
