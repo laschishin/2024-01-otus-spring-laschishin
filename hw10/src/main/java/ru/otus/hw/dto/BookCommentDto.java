@@ -12,18 +12,18 @@ public class BookCommentDto {
 
     private long id;
 
-    private Book book;
+    private BookDto book;
 
     private String textContent;
 
     public BookCommentDto(BookComment comment) {
         this.id = comment.getId();
-        this.book = comment.getBook();
+        this.book = new BookDto(comment.getBook());
         this.textContent = comment.getTextContent();
     }
 
     public BookComment toDomainObject() {
-        return new BookComment(id, book, textContent);
+        return new BookComment(id, book.toDomainObject(), textContent);
     }
 
 }
