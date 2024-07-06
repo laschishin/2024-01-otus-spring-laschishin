@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <title>View book</title>
     <link href="../static/styles.css" rel="stylesheet" th:href='@{/styles.css}'>
+    <script src="../static/js.js" th:src='@{/js.js}'></script>
 </head>
 <body>
 
@@ -13,29 +14,29 @@
 
 <div>
     <span>ID: </span>
-    <span th:text="${book.id}">1</span>
+    <span id="book-id"></span>
 </div>
 
 <div>
     <span>Title: </span>
-    <span th:text="${book.title}">Pro Spring 5: An In-Depth Guide to the Spring Framework and Its Tools</span>
+    <span id="book-title"></span>
 </div>
 
 <div>
     <span>Authors: </span>
-    <span th:text="${book.getAuthorsFullNames()}">Iuliana Cosmina</span>
+    <span id="book-authors"></span>
 </div>
 
 <div>
     <span>Genre: </span>
-    <span th:text="${book.genre.getName()}">Professional literature</span>
+    <span id="book-genre"></span>
 </div>
 
 <div>
-    <a href="books_edit.html" th:href="@{/book/edit/__${book.id}__}">
+    <a id="book-edit-link">
         <button type="button">Edit book</button>
     </a>
-    <a href="books_edit.html" th:href="@{/}">
+    <a href="/">
         <button type="button">Back</button>
     </a>
 </div>
@@ -44,11 +45,16 @@
 
     <h4>Comments</h4>
 
-
-    <div class="book_comment" th:each="comment : ${book_comments}">
-        <span th:text="${comment.textContent}">Comment 1</span>
-    </div>
+    <div id="book-comments"></div>
 </div>
+
+<div>
+    <span class="status_error" id="error_box" hidden ></span>
+</div>
+
+<script th:inline="javascript" defer>
+    fillBookView([[${book.id}]])
+</script>
 
 </body>
 </html>

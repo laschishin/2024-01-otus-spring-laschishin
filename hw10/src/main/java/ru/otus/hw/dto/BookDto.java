@@ -44,7 +44,7 @@ public class BookDto {
                 .collect(Collectors.joining(", "));
     }
 
-    public List<Long> getAuthorIds() {
+    public List<Long> getAuthorsIds() {
         return authors.stream()
                 .map(AuthorDto::getId)
                 .collect(Collectors.toList());
