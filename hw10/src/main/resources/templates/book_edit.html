@@ -10,43 +10,43 @@
 <body>
 
 <h3>Edit book</h3>
+<form>
+    <div>
+        <label for="book-id">ID</label>
+        <input id="book-id"
+               name="id"
+               readonly="readonly"
+               type="text">
+    </div>
 
-<div>
-    <label for="book-id">ID</label>
-    <input id="book-id"
-           name="id"
-           readonly="readonly"
-           type="text">
-</div>
+    <div>
+        <label for="book-title">Title</label>
+        <input id="book-title"
+               name="title"
+               type="text">
+    </div>
 
-<div>
-    <label for="book-title">Title</label>
-    <input id="book-title"
-           name="title"
-           type="text">
-</div>
+    <div>
+        <label for="book-authors">Authors</label>
+        <select id="book-authors"
+                multiple
+                name="authors"></select>
+    </div>
 
-<div>
-    <label for="book-authors">Authors</label>
-    <select id="book-authors"
-            multiple
-            name="authors"></select>
-</div>
+    <div>
+        <label for="book-genre">Genre</label>
+        <select id="book-genre"
+                name="genre">
+        </select>
+    </div>
 
-<div>
-    <label for="book-genre">Genre</label>
-    <select id="book-genre"
-            name="genre">
-    </select>
-</div>
-
-<div>
-    <button onclick="putBookEdit()" type="button">Save</button>
-    <a href="/">
-        <button type="button">Cancel</button>
-    </a>
-</div>
-
+    <div>
+        <button onclick="submitEditBook()" type="button">Save</button>
+        <a href="/">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
 <div>
     <span class="status_error" id="error_box" hidden></span>
 </div>

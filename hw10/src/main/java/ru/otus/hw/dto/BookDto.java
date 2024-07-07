@@ -1,6 +1,7 @@
 package ru.otus.hw.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,16 +39,16 @@ public class BookDto {
         );
     }
 
-    public String getAuthorsFullNames() {
-        return authors.stream()
-                .map(AuthorDto::getFullName)
-                .collect(Collectors.joining(", "));
-    }
+//    public String getAuthorsFullNames() {
+//        return authors.stream()
+//                .map(AuthorDto::getFullName)
+//                .collect(Collectors.joining(", "));
+//    }
 
-    public List<Long> getAuthorsIds() {
-        return authors.stream()
-                .map(AuthorDto::getId)
-                .collect(Collectors.toList());
-    }
+//    public List<Long> getAuthorsIds() {
+//        return authors.stream()
+//                .map(AuthorDto::getId)
+//                .collect(Collectors.toList());
+//    }
 
 }

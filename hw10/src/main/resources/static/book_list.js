@@ -16,7 +16,7 @@ function fillBookList() {
                     <td>
                         <a href="/book/view/${book.id}" >${book.title}</a>
                     </td>
-                    <td>${book.authorsFullNames}</td>
+                    <td>${getAuthorsFullNames(book.authors)}</td>
                     <td>${book.genre.name}</td>
                     <td>
                         <a href="/book/edit/${book.id}">Edit</a>

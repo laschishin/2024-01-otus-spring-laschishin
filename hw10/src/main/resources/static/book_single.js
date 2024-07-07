@@ -11,7 +11,7 @@ function fillBookView(bookId) {
             const book = result;
             document.querySelector("#book-id").innerHTML = book.id;
             document.querySelector("#book-title").innerHTML = book.title;
-            document.querySelector("#book-authors").innerHTML = book.authorsFullNames;
+            document.querySelector("#book-authors").innerHTML = getAuthorsFullNames(book.authors);
             document.querySelector("#book-genre").innerHTML = book.genre.name;
             document.querySelector("#book-edit-link").href = `/book/edit/${book.id}`;
             document.getElementById("error_box").hidden = true;
@@ -94,7 +94,7 @@ function fillBookEdit(bookId) {
         const book = result;
         document.querySelector("#book-id").value = book.id;
         document.querySelector("#book-title").value = book.title;
-        populateAuthors(book.authorsIds);
+        populateAuthors(getAuthorsIds(book.authors));
         populateGenres(book.genre.id);
         document.getElementById("error_box").hidden = true;
     })
@@ -106,36 +106,82 @@ function fillBookEdit(bookId) {
 
 }
 
-
-function putBookEdit() {
-
-    var authors = [];
-    for(let item of document.querySelectorAll("#book-authors option[selected]")) {
-        authors.push({
-            id: item.value,
-            fullName: ""
-        });
-    };
-    var genre= {
-        id: document.querySelector("#book-genre [selected]").value,
-        name: ""
-    };
-
+function prepareRequestBody(originalBook) {
     var book = {};
 
-    book.id = document.querySelector("#book-id").value;
-    book.title = document.querySelector("#book-title").value;
-    book.authors = authors;
-    book.genre = genre;
+    for (const element of document.querySelector("form").elements) {
+        switch(element.id) {
+            case "book-title":
+                let formTitle = element.value;
+                if (formTitle.localeCompare(originalBook.title) != 0) {
+                    book.title = formTitle;
+                }
+                break;
+            case "book-authors":
+                let formAuthors = Array.from(element.selectedOptions).flatMap(e => e.value).sort();
+                let origAuthors = originalBook.authors.flatMap(e => e.id).sort();
+                if (formAuthors.equals(origAuthors) == false) {
+                    book.authors = formAuthors;
+                }
+                break;
+            case "book-genre":
+                let formGenre = element.selectedOptions[0].value;
+                if (formGenre.localeCompare(originalBook.genre.id) != 0) {
+                    book.genre = formGenre;
+                }
+                break;
+        }
+    }
+
+//    let title = document.querySelector("#book-title").value;
+//    if (title.localeCompare(originalBook.title) != 0) {
+//        book.title = title;
+//    }
+//
+//    let authors = [];
+//    for(let item of document.querySelector("#book-authors").selectedOptions) {
+//        authors.push(item.value);
+//    };
+//    authors = authors
+//        .sort();
+//    let bookAuthorsId = originalBook.authors
+//        .flatMap(e => e.id)
+//        .sort();
+////    if (JSON.stringify(authors.sort()).localeCompare(JSON.stringify(bookAuthorsId)) != 0) {
+//    if (authors.equals(bookAuthorsId) == false) {
+//        book.authors = authors;
+//    }
+//
+//    let genre = document.querySelector("#book-genre").selectedOptions[0].value;
+//    if (genre.localeCompare(originalBook.genre.id) != 0) {
+//        book.genre = genre;
+//    }
+
+    return book;
+}
+
+function submitEditBook() {
 
 
+    bookId = document.querySelector("#book-id").value;
+
+    requestBody = prepareRequestBody(originalBook);
+
+    if(Object.keys(requestBody).length == 0) {
+        document.getElementById("error_box").textContent = "There is no changes";
+        document.getElementById("error_box").hidden = false;
+        return;
+    }
 
     const requestParams = {
-        method: "PUT",
-        body: JSON.stringify({book: book})
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody)
     };
 
-    queryJson(`/api/v1/books/${book.id}`, requestParams)
+    queryJson(`/api/v1/books/${bookId}`, requestParams)
         .then( (result) => {
             const book = result;
 //            document.querySelector("#book-id").value = book.id;
