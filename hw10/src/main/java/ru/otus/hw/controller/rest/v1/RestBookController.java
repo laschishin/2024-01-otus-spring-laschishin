@@ -2,9 +2,7 @@ package ru.otus.hw.controller.rest.v1;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.dto.BookCommentDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.repositories.BookRepository;
@@ -19,6 +17,7 @@ public class RestBookController {
 
     private final BookService bookService;
     private final BookCommentService bookCommentService;
+    private final BookRepository bookRepository;
 
     @GetMapping("api/v1/books")
     public List<BookDto> listBooks() {
@@ -34,6 +33,14 @@ public class RestBookController {
     @GetMapping("api/v1/books/{bookId}/comments")
     public List<BookCommentDto> getBookComments(@PathVariable long bookId) {
         return bookCommentService.findAllByBookId(bookId);
+    }
+
+    @PutMapping("api/v1/books/{bookId}")
+    public BookDto updateBook(@PathVariable long bookId,
+                              @RequestBody BookDto book) {
+        return new BookDto(
+                bookRepository.save(book.toDomainObject())
+        );
     }
 
 }

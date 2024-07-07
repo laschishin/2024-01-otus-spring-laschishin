@@ -1,6 +1,6 @@
-async function queryJson(url) {
+async function queryJson(url, requestParams={}) {
 
-    const response = await fetch(url);
+    const response = await fetch(url, requestParams);
 
     if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
@@ -152,6 +152,34 @@ function fillBookEdit(bookId) {
         document.getElementById("error_box").hidden = false;
     });
 
+}
+
+function putBookEdit() {
+
+    var book = {};
+
+    book.id = document.querySelector("#book-id").value;
+    book.title = document.querySelector("#book-title").value;
+
+    const requestParams = {
+        method: "PUT",
+        body: JSON.stringify({book: book})
+    };
+
+    queryJson(`/api/v1/books/${book.id}`, requestParams)
+        .then( (result) => {
+            const book = result;
+//            document.querySelector("#book-id").value = book.id;
+//            document.querySelector("#book-title").value = book.title;
+//            populateAuthors(book.authorsIds);
+//            populateGenres(book.genre.id);
+//            document.getElementById("error_box").hidden = true;
+            window.location.replace("/");
+        }).catch ((error) => {
+            console.error(error.message);
+            document.getElementById("error_box").textContent = `Book update error: ${error.message}`
+            document.getElementById("error_box").hidden = false;
+        });
 
 
 
