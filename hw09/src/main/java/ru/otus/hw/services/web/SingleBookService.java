@@ -23,7 +23,6 @@ public class SingleBookService {
     private final AuthorService authorService;
     private final GenreService genreService;
     private final BookRepository bookRepository;
-    private final BookCommentService bookCommentService;
 
 
     public Map<String, Object> getTemplateVariablesEmptyBook() {
@@ -48,44 +47,6 @@ public class SingleBookService {
     }
 
 
-    public Map<String, Object> getTemplateVariablesEditBookForm(long bookId) {
-
-        Map<String, Object> templateVariables = new HashMap<>();
-
-        BookDto book = bookService.findById(bookId)
-                .orElseThrow(EntityNotFoundException::new);
-        templateVariables.put("book", book);
-
-        List<AuthorDto> authorsFullList = authorService.findAll();
-        List<BookEditAuthorDto> authorsForViewList = prepareAuthorsList(book, authorsFullList);
-        templateVariables.put("authors", authorsForViewList);
-
-        List<GenreDto> genresFullList = genreService.findAll();
-        List<BookEditGenreDto> genresForViewList = prepareGenresList(book, genresFullList);
-        templateVariables.put("genres", genresForViewList);
-
-        return templateVariables;
-    }
-
-
-    public Map<String, Object> getTemplateVariablesViewBook(long bookId) {
-
-        Map<String, Object> templateVariables = new HashMap<>();
-
-        BookDto book = bookService.findById(bookId)
-                .orElseThrow(EntityNotFoundException::new);
-        templateVariables.put("book", book);
-
-        List<BookCommentDto> bookCommentsList = bookCommentService.findAllByBookId(bookId);
-        templateVariables.put("book_comments", bookCommentsList);
-
-        return templateVariables;
-    }
-
-    public void processUpdateBook(Book book) {
-        bookRepository.save(book);
-    }
-
     public Map<String, Object> getTemplateVariablesDeleteBook(long bookId) {
 
         Map<String, Object> viewEntities = new HashMap<>();
@@ -104,37 +65,6 @@ public class SingleBookService {
     public void processDeleteBook(long bookId) {
 
         bookRepository.deleteById(bookId);
-    }
-
-    private List<BookEditAuthorDto> prepareAuthorsList(BookDto book,
-                                                       List<AuthorDto> authorsList) {
-
-        List<Long> authorIdsList = book.getAuthors().stream()
-                .map(AuthorDto::getId)
-                .toList();
-
-        List<BookEditAuthorDto> bookEditAuthorDto = authorsList.stream()
-                .map(BookEditAuthorDto::new)
-                .toList();
-
-        bookEditAuthorDto.forEach(authorDto -> authorDto.setSelected(
-                authorIdsList.contains(authorDto.getId())
-        ));
-
-        return bookEditAuthorDto;
-    }
-
-    private List<BookEditGenreDto> prepareGenresList(BookDto book,
-                                                     List<GenreDto> genresList) {
-        List<BookEditGenreDto> bookEditGenreList = genresList.stream()
-                .map(BookEditGenreDto::new)
-                .toList();
-
-        bookEditGenreList.forEach(genreDto -> genreDto.setSelected(
-                genreDto.getId() == book.getGenre().getId()
-        ));
-
-        return bookEditGenreList;
     }
 
 }

@@ -1,12 +1,15 @@
 package ru.otus.hw.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import ru.otus.hw.exceptions.BadArgumentsException;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.services.web.BookUpdateService;
 import ru.otus.hw.services.web.ListBooksService;
 import ru.otus.hw.services.web.SingleBookService;
 
@@ -18,6 +21,7 @@ public class BookController {
 
     private final ListBooksService listBooksService;
     private final SingleBookService singleBookService;
+    private final BookUpdateService bookUpdateService;
 
 
     @GetMapping("/")
@@ -44,7 +48,7 @@ public class BookController {
     @PostMapping("/book/create")
     public String createBookPost(Book book) {
 
-        singleBookService.processUpdateBook(book);
+        bookUpdateService.processUpdateBook(0L, book);
 
         return "redirect:/";
     }
@@ -52,7 +56,7 @@ public class BookController {
     @GetMapping("/book/edit/{bookId}")
     public String editBookForm(@PathVariable long bookId, Model model) {
 
-        Map<String, Object> templateVariables = singleBookService.getTemplateVariablesEditBookForm(bookId);
+        Map<String, Object> templateVariables = bookUpdateService.getTemplateVariablesEditBookForm(bookId);
 
         model.addAttribute("book", templateVariables.get("book"));
         model.addAttribute("authors", templateVariables.get("authors"));
@@ -62,9 +66,9 @@ public class BookController {
     }
 
     @PostMapping("/book/edit/{bookId}")
-    public String editBookPost(Book book) {
+    public String editBookPost(Book book, @PathVariable Long bookId) throws BadArgumentsException {
 
-        singleBookService.processUpdateBook(book);
+        bookUpdateService.processUpdateBook(bookId, book);
 
         return "redirect:/";
     }
@@ -72,7 +76,7 @@ public class BookController {
     @GetMapping("/book/view/{bookId}")
     public String viewBook(@PathVariable long bookId, Model model) {
 
-        Map<String, Object> templateVariables = singleBookService.getTemplateVariablesViewBook(bookId);
+        Map<String, Object> templateVariables = bookUpdateService.getTemplateVariablesViewBook(bookId);
 
         model.addAttribute("book", templateVariables.get("book"));
         model.addAttribute("book_comments", templateVariables.get("book_comments"));

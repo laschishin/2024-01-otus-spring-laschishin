@@ -1,22 +1,26 @@
 package ru.otus.hw.controller;
 
-
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.exceptions.BadArgumentsException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.BookService;
+import ru.otus.hw.services.web.BookUpdateService;
 import ru.otus.hw.services.web.ListBooksService;
 import ru.otus.hw.services.web.SingleBookService;
 
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,6 +39,8 @@ class BookControllerTest {
     ListBooksService listBooksService;
     @MockBean
     SingleBookService singleBookService;
+    @MockBean
+    BookUpdateService bookUpdateService;
 
 
     @Test
@@ -79,8 +85,8 @@ class BookControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
 
-        verify(singleBookService, times(1)).processUpdateBook(new Book());
-        verifyNoMoreInteractions(singleBookService);
+        verify(bookUpdateService, times(1)).processUpdateBook(0L, new Book());
+        verifyNoMoreInteractions(bookUpdateService);
     }
 
     @Test
@@ -88,7 +94,7 @@ class BookControllerTest {
 
         long bookId = 1L;
 
-        when(singleBookService.getTemplateVariablesEditBookForm(bookId)).thenReturn(
+        when(bookUpdateService.getTemplateVariablesEditBookForm(bookId)).thenReturn(
                 Map.of(
                         "book", new BookDto(),
                         "authors", List.of(),
@@ -103,21 +109,64 @@ class BookControllerTest {
                 .andExpect(model().attributeExists("authors"))
                 .andExpect(model().attributeExists("genres"));
 
-        verify(singleBookService, times(1)).getTemplateVariablesEditBookForm(bookId);
-        verifyNoMoreInteractions(singleBookService);
+        verify(bookUpdateService, times(1)).getTemplateVariablesEditBookForm(bookId);
+        verifyNoMoreInteractions(bookUpdateService);
+    }
+
+    @Test
+    void editBookPost_when_BookIdFromUriIsNotEqualFormData() throws Exception {
+
+        Book bookFromForm = new Book();
+        long bookIdFromUrl = 1L;
+
+        doThrow(new BadArgumentsException(""))
+                .when(bookUpdateService).processUpdateBook(bookIdFromUrl, bookFromForm);
+
+        mvc.perform(post("/book/edit/{bookId}", bookIdFromUrl)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("id", String.valueOf(bookFromForm.getId()))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(BadArgumentsException.class));
+
+        verify(bookUpdateService, times(1)).processUpdateBook(bookIdFromUrl, bookFromForm);
+        verifyNoMoreInteractions(bookUpdateService);
+    }
+
+    @Test
+    void editBookPost_when_BookDoesNotExists() throws Exception {
+
+        Book book = new Book();
+        book.setId(100500L);
+
+
+        doThrow(new BadArgumentsException("")).when(bookUpdateService).processUpdateBook(book.getId(), book);
+
+        mvc.perform(post("/book/edit/{bookId}", book.getId())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("id", String.valueOf(book.getId()))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(BadArgumentsException.class));
+
+        verify(bookUpdateService, times(1)).processUpdateBook(book.getId(), book);
+        verifyNoMoreInteractions(bookUpdateService);
     }
 
     @Test
     void editBookPostTest() throws Exception {
 
-        long bookId = 1L;
+        Book book = new Book();
+        book.setId(1L);
 
-        mvc.perform(post("/book/edit/{bookId}", bookId))
+        mvc.perform(post("/book/edit/{bookId}", book.getId())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("id", String.valueOf(book.getId())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
 
-        verify(singleBookService, times(1)).processUpdateBook(new Book());
-        verifyNoMoreInteractions(singleBookService);
+        verify(bookUpdateService, times(1)).processUpdateBook(book.getId(), book);
+        verifyNoMoreInteractions(bookUpdateService);
     }
 
     @Test
@@ -127,7 +176,7 @@ class BookControllerTest {
                 1, "Title", List.of(), new GenreDto(1, "Title"));
         long bookId = book.getId();
 
-        when(singleBookService.getTemplateVariablesViewBook(bookId)).thenReturn(
+        when(bookUpdateService.getTemplateVariablesViewBook(bookId)).thenReturn(
                 Map.of(
                         "book", book,
                         "book_comments", List.of()
@@ -140,13 +189,12 @@ class BookControllerTest {
                 .andExpect(model().attributeExists("book"))
                 .andExpect(model().attributeExists("book_comments"));
 
-        verify(singleBookService, times(1)).getTemplateVariablesViewBook(bookId);
-        verifyNoMoreInteractions(singleBookService);
+        verify(bookUpdateService, times(1)).getTemplateVariablesViewBook(bookId);
+        verifyNoMoreInteractions(bookUpdateService);
     }
 
     @Test
     void confirmDeleteBookTest() throws Exception {
-
 
         BookDto book = new BookDto(
                 1, "Title", List.of(), new GenreDto(1, "Title"));
