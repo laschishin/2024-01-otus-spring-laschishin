@@ -41,13 +41,13 @@ public class BookDto {
 
 //    public String getAuthorsFullNames() {
 //        return authors.stream()
-//                .map(AuthorDto::getFullName)
+//                .mapChanged(AuthorDto::getFullName)
 //                .collect(Collectors.joining(", "));
 //    }
 
 //    public List<Long> getAuthorsIds() {
 //        return authors.stream()
-//                .map(AuthorDto::getId)
+//                .mapChanged(AuthorDto::getId)
 //                .collect(Collectors.toList());
 //    }
 

@@ -10,6 +10,7 @@ import ru.otus.hw.repositories.AuthorRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +28,15 @@ public class AuthorServiceImpl implements AuthorService {
         return authors.stream()
                 .map(AuthorDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AuthorDto> findAllByIdIn(Set<Long> ids) {
+        return authorRepository.findAllByIdIn(ids)
+                .stream()
+                .map(AuthorDto::new)
+                .toList();
     }
 
     @Override

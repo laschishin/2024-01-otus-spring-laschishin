@@ -1,14 +1,11 @@
 package ru.otus.hw.controller.rest.v1;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.dto.BookCommentDto;
 import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.dto.UpdateBookRequest;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.services.BookCommentService;
@@ -46,18 +43,11 @@ public class RestBookController {
     @PatchMapping("api/v1/books/{bookId}")
     public BookDto updateBook(@PathVariable long bookId,
                               @RequestBody UpdateBookRequest request) throws JsonMappingException {
-//                              @RequestBody Map<String, Object> request) {
-
-//        bookRepository.findById(bookId)
-//                .map(book -> {
-//                    book.setTitle(request.getTitle());
-//
-//                })
 
         BookDto bookDto = bookService.findById(bookId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        BookDto updatedBook = bookMapperService.map(bookDto, request);
+        BookDto updatedBook = bookMapperService.mapChanged(bookDto, request);
 
         bookRepository.save(updatedBook.toDomainObject());
 
