@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AuthorDto {
 
-    private long id;
+    private Long id;
 
     private String fullName;
 

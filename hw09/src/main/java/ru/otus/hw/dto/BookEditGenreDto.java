@@ -11,7 +11,7 @@ import ru.otus.hw.models.Genre;
 @AllArgsConstructor
 public class BookEditGenreDto {
 
-    private long id;
+    private Long id;
 
     private String name;
 

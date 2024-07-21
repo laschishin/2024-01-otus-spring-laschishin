@@ -8,6 +8,7 @@ import ru.otus.hw.models.Author;
 import ru.otus.hw.repositories.AuthorRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

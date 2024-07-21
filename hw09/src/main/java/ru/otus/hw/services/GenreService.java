@@ -1,8 +1,10 @@
 package ru.otus.hw.services;
 
+import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GenreService {
 

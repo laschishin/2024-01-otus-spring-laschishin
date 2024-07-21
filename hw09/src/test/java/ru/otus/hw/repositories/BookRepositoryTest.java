@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,7 +78,7 @@ class BookRepositoryTest {
     void shouldSaveNewBook() {
 
         Book expectedBook = new Book(
-                0,
+                0L,
                 "BookTitle_10500",
                 List.of(dbAuthors.get(0), dbAuthors.get(2)),
                 dbGenres.get(0)
@@ -140,13 +141,13 @@ class BookRepositoryTest {
     }
 
     private static List<Author> getDbAuthors() {
-        return IntStream.range(1, 7).boxed()
+        return LongStream.range(1, 7).boxed()
                 .map(id -> new Author(id, "Author_" + id))
                 .toList();
     }
 
     private static List<Genre> getDbGenres() {
-        return IntStream.range(1, 7).boxed()
+        return LongStream.range(1, 7).boxed()
                 .map(id -> new Genre(id, "Genre_" + id))
                 .toList();
     }

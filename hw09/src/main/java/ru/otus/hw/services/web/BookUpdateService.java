@@ -2,16 +2,22 @@ package ru.otus.hw.services.web;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dto.*;
 import ru.otus.hw.exceptions.BadArgumentsException;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookCommentService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,17 +28,19 @@ public class BookUpdateService {
 
     private final BookService bookService;
     private final AuthorService authorService;
+    private final AuthorRepository authorRepository;
     private final GenreService genreService;
+    private final GenreRepository genreRepository;
     private final BookCommentService bookCommentService;
     private final BookRepository bookRepository;
 
 
-    public Map<String, Object> getTemplateVariablesEditBookForm(long bookId) {
+    public Map<String, Object> getTemplateVariables(long bookId) {
 
         Map<String, Object> templateVariables = new HashMap<String, Object>();
 
         BookDto book = bookService.findById(bookId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Book with id = %d doesn't exists".formatted(bookId)));
         templateVariables.put("book", book);
 
         List<AuthorDto> authorsFullList = authorService.findAll();
@@ -46,31 +54,46 @@ public class BookUpdateService {
         return templateVariables;
     }
 
-    public Map<String, Object> getTemplateVariablesViewBook(long bookId) {
+    public void processUpdateBook(@NotNull Long bookId,
+                                  @NotNull String bookTitle,
+                                  @NotNull List<Long> authorsList,
+                                  @NotNull Long genreId) {
 
-        Map<String, Object> templateVariables = new HashMap<String, Object>();
+        Book book = bookService.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id = %d doesn't exists".formatted(bookId)))
+                .toDomainObject();
 
-        BookDto book = bookService.findById(bookId)
-                .orElseThrow(EntityNotFoundException::new);
-        templateVariables.put("book", book);
+        book.setTitle(bookTitle);
 
-        List<BookCommentDto> bookCommentsList = bookCommentService.findAllByBookId(bookId);
-        templateVariables.put("book_comments", bookCommentsList);
+        List<Author> authors = new ArrayList<>();
+        authorsList.forEach(authorId ->
+                authors.add(
+                        authorRepository.findById(authorId)
+                                .orElseThrow(() -> new EntityNotFoundException("Author with id = %d doesn't exists".formatted(authorId)))
+                )
+        );
+//        for (Long authorId : authorsList) {
+//            authors.add(
+//                    authorRepository.findById(authorId)
+//                            .orElseThrow(() -> new EntityNotFoundException("Author with id = %d doesn't exists".formatted(authorId)))
+//            );
+//        }
+        book.setAuthors(authors);
 
-        return templateVariables;
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id = %d doesn't found".formatted(genreId)));
+        book.setGenre(genre);
+
+        bookRepository.save(book);
+
     }
 
-    public void processUpdateBook(long bookId, Book book) throws BadArgumentsException {
+    public void processUpdateBook(long bookId, Book book) {
 
-        try {
-            validateUpdateBook(bookId, book);
-        }
-        catch (EntityNotFoundException ex) {
-            throw new BadArgumentsException(ex.getMessage());
-        }
+        validateUpdateBook(bookId, book);
 
         Book repoBook = bookService.findById(book.getId())
-                .orElseThrow(() -> new BadArgumentsException("Book with id = %d doesn't exists".formatted(book.getId())))
+                .orElseThrow(() -> new EntityNotFoundException("Book with id = %d doesn't exists".formatted(book.getId())))
                 .toDomainObject();
 
         repoBook.setTitle(book.getTitle());
@@ -82,8 +105,8 @@ public class BookUpdateService {
 
     public void validateUpdateBook(long bookId, Book book) {
 
-        if(bookId != book.getId()) {
-            throw new BadArgumentsException("Wrong book data for book_id %d".formatted(book.getId()));
+        if (bookId != book.getId()) {
+            throw new BadArgumentsException("Wrong book data for book_id %d".formatted(bookId));
         }
 
     }

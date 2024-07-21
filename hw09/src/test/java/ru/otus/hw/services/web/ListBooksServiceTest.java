@@ -14,6 +14,7 @@ import ru.otus.hw.services.BookService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.when;
 class ListBooksServiceTest {
 
     @Autowired
-    ListBooksService listBooksService;
+    BookViewService bookViewService;
 
     @MockBean
     BookService bookService;
@@ -52,7 +53,7 @@ class ListBooksServiceTest {
 
         when(bookService.findAll()).thenReturn(booksList);
 
-        Map<String, Object> actualTemplateVariables = listBooksService.getTemplateVariablesListAllBooks();
+        Map<String, Object> actualTemplateVariables = bookViewService.getTemplateVariablesListAllBooks();
 
         assertThat(actualTemplateVariables)
                 .usingRecursiveComparison()
@@ -60,20 +61,20 @@ class ListBooksServiceTest {
     }
 
     private static List<Author> getDbAuthors() {
-        return IntStream.range(1, 7).boxed()
+        return LongStream.range(1, 7).boxed()
                 .map(id -> new Author(id, "Author_" + id))
                 .toList();
     }
 
     private static List<Genre> getDbGenres() {
-        return IntStream.range(1, 7).boxed()
+        return LongStream.range(1, 7).boxed()
                 .map(id -> new Genre(id, "Genre_" + id))
                 .toList();
     }
 
     private static List<Book> getDbBooks() {
         return IntStream.range(1, 7).boxed()
-                .map(id -> new Book(id, "Title_" + id, List.of(getDbAuthors().get(id-1)), getDbGenres().get(id-1)))
+                .map(id -> new Book(Long.valueOf(id), "Title_" + id, List.of(getDbAuthors().get(id-1)), getDbGenres().get(id-1)))
                 .toList();
     }
 

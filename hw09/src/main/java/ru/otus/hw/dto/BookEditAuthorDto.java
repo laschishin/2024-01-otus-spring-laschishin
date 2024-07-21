@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class BookEditAuthorDto {
 
-    private long id;
+    private Long id;
 
     private String fullName;
 

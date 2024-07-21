@@ -1,33 +1,32 @@
 package ru.otus.hw.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import ru.otus.hw.exceptions.BadArgumentsException;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.services.web.BookCreateService;
+import ru.otus.hw.services.web.BookDeleteService;
 import ru.otus.hw.services.web.BookUpdateService;
-import ru.otus.hw.services.web.ListBooksService;
-import ru.otus.hw.services.web.SingleBookService;
+import ru.otus.hw.services.web.BookViewService;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class BookController {
 
-    private final ListBooksService listBooksService;
-    private final SingleBookService singleBookService;
+    private final BookViewService bookViewService;
     private final BookUpdateService bookUpdateService;
+    private final BookCreateService bookCreateService;
+    private final BookDeleteService bookDeleteService;
 
 
     @GetMapping("/")
     public String listBooks(Model model) {
 
-        Map<String, Object> templateVariables = listBooksService.getTemplateVariablesListAllBooks();
+        Map<String, Object> templateVariables = bookViewService.getTemplateVariablesListAllBooks();
 
         model.addAttribute("books", templateVariables.get("books"));
 
@@ -37,7 +36,7 @@ public class BookController {
     @GetMapping("/book/create")
     public String createBookForm(Model model) {
 
-        Map<String, Object> templateVariables = singleBookService.getTemplateVariablesEmptyBook();
+        Map<String, Object> templateVariables = bookCreateService.getTemplateVariablesEmptyBook();
 
         model.addAttribute("authors", templateVariables.get("authors"));
         model.addAttribute("genres", templateVariables.get("genres"));
@@ -48,27 +47,36 @@ public class BookController {
     @PostMapping("/book/create")
     public String createBookPost(Book book) {
 
-        bookUpdateService.processUpdateBook(0L, book);
+        bookCreateService.processCreateBook(book);
 
         return "redirect:/";
     }
 
     @GetMapping("/book/edit/{bookId}")
-    public String editBookForm(@PathVariable long bookId, Model model) {
+    public String editBookGet(@PathVariable long bookId, Model model) {
 
-        Map<String, Object> templateVariables = bookUpdateService.getTemplateVariablesEditBookForm(bookId);
-
-        model.addAttribute("book", templateVariables.get("book"));
-        model.addAttribute("authors", templateVariables.get("authors"));
-        model.addAttribute("genres", templateVariables.get("genres"));
+        model.addAllAttributes(
+                bookUpdateService.getTemplateVariables(bookId)
+        );
 
         return "book_edit";
     }
 
-    @PostMapping("/book/edit/{bookId}")
-    public String editBookPost(Book book, @PathVariable Long bookId) throws BadArgumentsException {
+//    @PostMapping("/book/edit/{bookId}")
+//    public String editBookPost(@PathVariable Long bookId, Book book) {
+//
+//        bookUpdateService.processUpdateBook(bookId, book);
+//
+//        return "redirect:/";
+//    }
 
-        bookUpdateService.processUpdateBook(bookId, book);
+    @PostMapping("/book/edit/{bookId}")
+    public String editBookPost(@PathVariable Long bookId,
+                               @RequestParam("title") String bookTitle,
+                               @RequestParam("authors") Long[] authorsList,
+                               @RequestParam("genre") Long genreId) {
+
+        bookUpdateService.processUpdateBook(bookId, bookTitle, List.of(authorsList), genreId);
 
         return "redirect:/";
     }
@@ -76,7 +84,7 @@ public class BookController {
     @GetMapping("/book/view/{bookId}")
     public String viewBook(@PathVariable long bookId, Model model) {
 
-        Map<String, Object> templateVariables = bookUpdateService.getTemplateVariablesViewBook(bookId);
+        Map<String, Object> templateVariables = bookViewService.getTemplateVariablesViewBook(bookId);
 
         model.addAttribute("book", templateVariables.get("book"));
         model.addAttribute("book_comments", templateVariables.get("book_comments"));
@@ -87,7 +95,7 @@ public class BookController {
     @GetMapping("/book/delete/{bookId}")
     public String confirmDeleteBook(@PathVariable long bookId, Model model) {
 
-        Map<String, Object> templateVariables = singleBookService.getTemplateVariablesDeleteBook(bookId);
+        Map<String, Object> templateVariables = bookDeleteService.getTemplateVariablesDeleteBook(bookId);
 
         model.addAttribute("book", templateVariables.get("book"));
         model.addAttribute("authors", templateVariables.get("authors"));
@@ -99,7 +107,7 @@ public class BookController {
     @PostMapping("/book/delete/{bookId}")
     public String deleteBookPost(@PathVariable long bookId) {
 
-        singleBookService.processDeleteBook(bookId);
+        bookDeleteService.processDeleteBook(bookId);
 
         return "redirect:/";
     }
