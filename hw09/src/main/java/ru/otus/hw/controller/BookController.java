@@ -26,9 +26,9 @@ public class BookController {
     @GetMapping("/")
     public String listBooks(Model model) {
 
-        Map<String, Object> templateVariables = bookViewService.getTemplateVariablesListAllBooks();
-
-        model.addAttribute("books", templateVariables.get("books"));
+        model.addAllAttributes(
+                bookViewService.getTemplateVariablesListAllBooks()
+        );
 
         return "books_list";
     }
@@ -98,7 +98,7 @@ public class BookController {
         Map<String, Object> templateVariables = bookDeleteService.getTemplateVariablesDeleteBook(bookId);
 
         model.addAttribute("book", templateVariables.get("book"));
-        model.addAttribute("authors", templateVariables.get("authors"));
+        model.addAttribute("authors_list", templateVariables.get("authors_list"));
         model.addAttribute("genre", templateVariables.get("genre"));
 
         return "book_delete_confirm";

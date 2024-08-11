@@ -7,7 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.context.WebApplicationContext;
 import ru.otus.hw.dto.*;
 import ru.otus.hw.exceptions.BadArgumentsException;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -77,9 +79,9 @@ class BookControllerTest {
     }
 
     @BeforeEach
-//    void setup(WebApplicationContext wac) {
-//        this.mvc = MockMvcBuilders.webAppContextSetup(wac).build();
-//    }
+    void setup(WebApplicationContext wac) {
+        this.mvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
 
 
     @Test
@@ -88,10 +90,11 @@ class BookControllerTest {
         when(bookViewService.getTemplateVariablesListAllBooks()).thenReturn(
                 Map.of("books", List.of()));
 
-        mvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("books_list"))
-                .andExpect(model().attributeExists("books"));
+        mvc.perform(get("/")).andExpectAll(
+                status().isOk(),
+                view().name("books_list"),
+                model().attributeExists("books")
+        );
 
         verify(bookViewService, times(1)).getTemplateVariablesListAllBooks();
         verifyNoMoreInteractions(bookViewService);
@@ -332,16 +335,38 @@ class BookControllerTest {
     @Test
     void editBookPostTest() throws Exception {
 
-        Book book = new Book();
-        book.setId(1L);
+        Book book = mockBooks.get(0);
+        List<Long> authorIds = book.getAuthors().stream().map(Author::getId).toList();
+
+        Map<String, List<String>> params = Map.of(
+                "id", List.of(book.getId().toString()),
+                "title", List.of(book.getTitle()),
+                "authors", book.getAuthors().stream().map(a -> a.getId().toString()).toList(),
+                "genre", List.of(book.getGenre().getId().toString())
+        );
+
+//        doNothing().when(bookUpdateService)
+//                .processUpdateBook(
+//                        book.getId(),
+//                        book.getTitle(),
+//                        authorIds,
+//                        book.getGenre().getId()
+//                );
 
         mvc.perform(post("/book/edit/{bookId}", book.getId())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", String.valueOf(book.getId())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                        .params(new LinkedMultiValueMap<>(params)))
+                .andExpectAll(
+                        status().is3xxRedirection(),
+                        view().name("redirect:/")
+                );
 
-        verify(bookUpdateService, times(1)).processUpdateBook(book.getId(), book);
+        verify(bookUpdateService, times(1)).processUpdateBook(
+                book.getId(),
+                book.getTitle(),
+                authorIds,
+                book.getGenre().getId()
+        );
         verifyNoMoreInteractions(bookUpdateService);
     }
 
@@ -379,7 +404,7 @@ class BookControllerTest {
         when(bookDeleteService.getTemplateVariablesDeleteBook(bookId)).thenReturn(
                 Map.of(
                         "book", book,
-                        "authors", List.of(),
+                        "authors_list", List.of(),
                         "genre", new Genre()
                 )
         );
@@ -388,7 +413,7 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("book_delete_confirm"))
                 .andExpect(model().attributeExists("book"))
-                .andExpect(model().attributeExists("authors"))
+                .andExpect(model().attributeExists("authors_list"))
                 .andExpect(model().attributeExists("genre"));
 
         verify(bookDeleteService, times(1)).getTemplateVariablesDeleteBook(bookId);
