@@ -3,8 +3,10 @@ package ru.otus.hw.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import ru.otus.hw.models.Book;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.services.web.BookCreateService;
 import ru.otus.hw.services.web.BookDeleteService;
 import ru.otus.hw.services.web.BookUpdateService;
@@ -21,7 +23,6 @@ public class BookController {
     private final BookUpdateService bookUpdateService;
     private final BookCreateService bookCreateService;
     private final BookDeleteService bookDeleteService;
-
 
     @GetMapping("/")
     public String listBooks(Model model) {
@@ -45,9 +46,17 @@ public class BookController {
     }
 
     @PostMapping("/book/create")
-    public String createBookPost(Book book) {
+    public String createBookPost(@PathVariable Long bookId,
+                                 @RequestParam("title") String bookTitle,
+                                 @RequestParam("authors") Long[] authorsList,
+                                 @RequestParam("genre") Long genreId) {
 
-        bookCreateService.processCreateBook(book);
+        bookCreateService.processCreateBook(
+                bookId,
+                bookTitle,
+                List.of(authorsList),
+                genreId
+        );
 
         return "redirect:/";
     }
@@ -62,21 +71,18 @@ public class BookController {
         return "book_edit";
     }
 
-//    @PostMapping("/book/edit/{bookId}")
-//    public String editBookPost(@PathVariable Long bookId, Book book) {
-//
-//        bookUpdateService.processUpdateBook(bookId, book);
-//
-//        return "redirect:/";
-//    }
-
     @PostMapping("/book/edit/{bookId}")
     public String editBookPost(@PathVariable Long bookId,
                                @RequestParam("title") String bookTitle,
                                @RequestParam("authors") Long[] authorsList,
                                @RequestParam("genre") Long genreId) {
 
-        bookUpdateService.processUpdateBook(bookId, bookTitle, List.of(authorsList), genreId);
+        bookUpdateService.processUpdateBook(
+                bookId,
+                bookTitle,
+                List.of(authorsList),
+                genreId
+        );
 
         return "redirect:/";
     }

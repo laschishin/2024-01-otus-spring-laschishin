@@ -87,13 +87,17 @@ class BookControllerTest {
     @Test
     void listBooksTest() throws Exception {
 
+        List<BookDto> books = mockBooksDto;
+
         when(bookViewService.getTemplateVariablesListAllBooks()).thenReturn(
-                Map.of("books", List.of()));
+                Map.of("books", books)
+        );
 
         mvc.perform(get("/")).andExpectAll(
                 status().isOk(),
                 view().name("books_list"),
-                model().attributeExists("books")
+                model().attributeExists("books"),
+                model().attribute("books", books)
         );
 
         verify(bookViewService, times(1)).getTemplateVariablesListAllBooks();
@@ -103,18 +107,29 @@ class BookControllerTest {
     @Test
     void createBookFormTest() throws Exception {
 
+        List<BookEditAuthorDto> authors = mockAuthorsDto.stream()
+                .map(BookEditAuthorDto::new)
+                .toList();
+        List<BookEditGenreDto> genres = mockGenresDto.stream()
+                .map(BookEditGenreDto::new)
+                .toList();
+
         when(bookCreateService.getTemplateVariablesEmptyBook()).thenReturn(
                 Map.of(
-                        "authors", List.of(),
-                        "genres", List.of()
+                        "authors", authors,
+                        "genres", genres
                 )
         );
 
         mvc.perform(get("/book/create"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("book_create"))
-                .andExpect(model().attributeExists("authors"))
-                .andExpect(model().attributeExists("genres"));
+                .andExpectAll(
+                        status().isOk(),
+                        view().name("book_create"),
+                        model().attributeExists("authors"),
+                        model().attribute("authors", authors),
+                        model().attributeExists("genres"),
+                        model().attribute("genres", genres)
+                );
 
         verify(bookCreateService, times(1)).getTemplateVariablesEmptyBook();
         verifyNoMoreInteractions(bookCreateService);
@@ -124,8 +139,10 @@ class BookControllerTest {
     void createBookPostTest() throws Exception {
 
         mvc.perform(post("/book/create"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/"));
+                .andExpectAll(
+                        status().is3xxRedirection(),
+                        view().name("redirect:/")
+                );
 
         verify(bookCreateService, times(1)).processCreateBook(new Book());
         verifyNoMoreInteractions(bookCreateService);
@@ -142,13 +159,22 @@ class BookControllerTest {
 //                "Book with id = %d doesn't exists".formatted(bookId)
 //        );
 
+        EntityNotFoundException expectedException = new EntityNotFoundException(
+                "Book with id = %d doesn't exists".formatted(bookId));
+
         when(bookUpdateService.getTemplateVariables(bookId))
-                .thenThrow(new EntityNotFoundException("Book with id = %d doesn't exists".formatted(bookId)));
+                .thenThrow(expectedException);
 
-
-        mvc.perform(get("/book/edit/{bookId}", bookId)).andExpectAll(
-                status().isBadRequest()
-        );
+        mvc.perform(get("/book/edit/{bookId}", bookId))
+                .andExpectAll(
+                        status().isBadRequest(),
+                        result -> {
+                            assertThat(result.getResolvedException())
+                                    .isInstanceOf(expectedException.getClass());
+                            assertThat(Objects.requireNonNullElse(result.getResolvedException(), new Exception()).getMessage())
+                                    .isEqualTo(expectedException.getMessage());
+                        }
+                );
 
         verify(bookUpdateService, times(1)).getTemplateVariables(bookId);
         verifyNoMoreInteractions(bookUpdateService);
@@ -182,6 +208,9 @@ class BookControllerTest {
         mvc.perform(get("/book/edit/{bookId}", bookId)).andExpectAll(
                 status().isOk(),
                 view().name("book_edit"),
+                model().attributeExists("book"),
+                model().attributeExists("authors"),
+                model().attributeExists("genres"),
                 model().attribute("book", book),
                 model().attribute("authors", authors),
                 model().attribute("genres", genres)
@@ -344,14 +373,6 @@ class BookControllerTest {
                 "authors", book.getAuthors().stream().map(a -> a.getId().toString()).toList(),
                 "genre", List.of(book.getGenre().getId().toString())
         );
-
-//        doNothing().when(bookUpdateService)
-//                .processUpdateBook(
-//                        book.getId(),
-//                        book.getTitle(),
-//                        authorIds,
-//                        book.getGenre().getId()
-//                );
 
         mvc.perform(post("/book/edit/{bookId}", book.getId())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)

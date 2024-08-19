@@ -56,21 +56,4 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    private Book save(long id, String title, Set<Long> authorsIds, long genreId) {
-
-        if (isEmpty(authorsIds)) {
-            throw new IllegalArgumentException("Authors ids must not be null");
-        }
-
-        var genre = genreRepository.getReferenceById(genreId);
-        var authors = authorRepository.findAllByIdIn(authorsIds);
-        if (isEmpty(authorsIds) || authorsIds.size() != authors.size()) {
-            throw new EntityNotFoundException("One or all authors with ids %s not found".formatted(authorsIds));
-        }
-
-        var book = new Book(id, title, authors, genre);
-        return bookRepository.save(book);
-
-    }
-
 }
